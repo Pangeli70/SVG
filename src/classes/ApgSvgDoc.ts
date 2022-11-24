@@ -12,6 +12,7 @@
 import { A2D } from "../../deps.ts";
 
 import { eApgSvgCoordType } from "../enums/eApgSvgCoordType.ts";
+import { eApgSvgNodeTypes } from "../enums/eApgSvgNodeTypes.ts";
 import { ApgSvgNode } from "./ApgSvgNode.ts";
 import { ApgSvgStyle } from "./ApgSvgStyle.ts";
 
@@ -19,134 +20,139 @@ import { ApgSvgStyle } from "./ApgSvgStyle.ts";
 const DEFAULT_WIDTH = 800;
 const DEFAULT_HEIGHT = DEFAULT_WIDTH / 16 * 9;
 
+const DEFAULT_VIEWBOX_WIDTH = 10000;
+const DEFAULT_VIEWBOX_HEIGHT = DEFAULT_VIEWBOX_WIDTH / 16 * 9;
+
 export class ApgSvgDoc {
-  public viewboxX = 0;
-  public viewboxY = 0;
 
-  public viewboxWidth = 10000;
-  public viewboxHeight = 10000;
+  private _width: number = DEFAULT_WIDTH;
+  private _height: number = DEFAULT_HEIGHT;
 
-  public width: number = DEFAULT_WIDTH;
+  private _viewBoxX = 0;
+  private _viewBoxY = 0;
 
-  public height: number = DEFAULT_HEIGHT;
+  private _viewBoxWidth = DEFAULT_VIEWBOX_WIDTH;
+  private _viewBoxHeight = DEFAULT_VIEWBOX_HEIGHT;
 
   public title = "ApgSvgDoc";
-  public desc = "Default description";
+  public description = "Default description";
 
-  public rootNode!: ApgSvgNode;
-  public nodeMap: Map<string, ApgSvgNode> = new Map();
-  public defsMap: Map<string, ApgSvgNode> = new Map();
-  public stylesMap: Map<string, ApgSvgStyle> = new Map();
+  private _rootNode: ApgSvgNode;
+  private _nodes: Map<string, ApgSvgNode> = new Map();
+  private _defs: Map<string, ApgSvgNode> = new Map();
+  private _styles: Map<string, ApgSvgStyle> = new Map();
 
-  public globalIDCounter = 1;
+  private _idCounter = 1;
 
-  public hasViewBoxSheet = false;
+  private _viewBoxHasBackground = false;
 
-  public constructor(
+  constructor(
     aw: number = DEFAULT_WIDTH,
     ah: number = DEFAULT_HEIGHT,
-    ahasViewBoxSheet = true,
+    aviewBoxHasBackground = true,
   ) {
     const NODE_ID = "Apg_Svg_Root_Node"
 
-    this.width = aw;
-    this.height = ah;
-    this.hasViewBoxSheet = ahasViewBoxSheet;
-    this.rootNode = this.Group(NODE_ID);
+    this._width = aw;
+    this._height = ah;
+    this._viewBoxHasBackground = aviewBoxHasBackground;
+    this._rootNode = this.group(NODE_ID);
   }
 
-  public SetViewbox(ax: number, ay: number, aw: number, ah: number) {
-    this.viewboxX = ax;
-    this.viewboxY = ay;
-    this.viewboxWidth = aw;
-    this.viewboxHeight = ah;
-    this.rootNode.Move(0, -this.viewboxY);
-    this._viewBoxSheet();
+  setViewbox(ax: number, ay: number, aw: number, ah: number) {
+    this._viewBoxX = ax;
+    this._viewBoxY = ay;
+    this._viewBoxWidth = aw;
+    this._viewBoxHeight = ah;
+    this._rootNode.move(0, -this._viewBoxY);
+    this.#viewBoxBackground();
   }
 
-  private _y(ay: number): number {
+  #y(ay: number): number {
     //return this.viewboxHeight - ay;
     return -ay;
   }
 
-  private _getNextID(aid: string, atype: string): string {
+  #nextID(aid: string, atype: string): string {
     let r = aid;
     let noID = false;
     if (aid === "") {
       noID = true;
-    } else if (this.nodeMap.has(aid)) {
+    } else if (this._nodes.has(aid)) {
       noID = true;
     }
     if (noID) {
-      r = atype + "-" + this.globalIDCounter.toString();
+      r = atype + "-" + this._idCounter.toString();
     }
     return r;
   }
 
-  private _addNode(anode: ApgSvgNode) {
-    this.globalIDCounter++;
-    this.nodeMap.set(anode.ID, anode);
+  #addNode(anode: ApgSvgNode) {
+    this._idCounter++;
+    this._nodes.set(anode.ID, anode);
   }
 
-  public coordFromViewBoxPerc(aperc: number, atype: eApgSvgCoordType) {
+  #coordFromViewBoxPerc(aperc: number, atype: eApgSvgCoordType) {
     if (aperc < 0 || aperc > 1) {
       throw new Error(`Percentage out of range ${aperc}`);
     }
     switch (atype) {
       case eApgSvgCoordType.x:
-        return this.viewboxWidth * aperc + this.viewboxX;
+        return this._viewBoxWidth * aperc + this._viewBoxX;
       case eApgSvgCoordType.y:
-        return this.viewboxHeight * aperc + this.viewboxY;
+        return this._viewBoxHeight * aperc + this._viewBoxY;
       case eApgSvgCoordType.w:
-        return this.viewboxWidth * aperc;
+        return this._viewBoxWidth * aperc;
       case eApgSvgCoordType.h:
-        return this.viewboxHeight * aperc;
+        return this._viewBoxHeight * aperc;
     }
   }
 
-  public Group(aid = ""): ApgSvgNode {
+  group(aid = ""): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Group";
+    r.type = eApgSvgNodeTypes.Group;
     r.tag = "g";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public AddToRoot(anode: ApgSvgNode) {
-    this.rootNode.children.push(anode);
+  addToRoot(anode: ApgSvgNode) {
+    this._rootNode.addChild(anode);
   }
 
-  public AddToDefs(anode: ApgSvgNode) {
-    this.defsMap.set(anode.ID, anode);
+  addToDefs(anode: ApgSvgNode) {
+    this._defs.set(anode.ID, anode);
   }
 
-  public AddStyle(astyle: ApgSvgStyle) {
-    this.stylesMap.set(astyle.ID, astyle);
+  addToStyles(astyle: ApgSvgStyle) {
+    this._styles.set(astyle.ID, astyle);
   }
 
-  private _viewBoxSheet() {
-    const ID = "APG_SVG_DOC_VIEWBOX_SHEET";
 
-    if (this.hasViewBoxSheet) {
+  #viewBoxBackground() {
+    const ID = "APG_SVG_DOC_VIEWBOX_BACKGROUND";
 
-      const sheet = this.Rect(
-        this.viewboxX,
-        this.viewboxY,
-        this.viewboxWidth,
-        this.viewboxHeight,
+    if (this._viewBoxHasBackground) {
+
+      const background = this.rect(
+        this._viewBoxX,
+        this._viewBoxY,
+        this._viewBoxWidth,
+        this._viewBoxHeight,
         ID,
       );
-      sheet.Fill('#FFFFFF');
-      sheet.Stroke('black', 1);
-      sheet.Attrib('opacity', '0.5');
-      sheet.ChildOfRoot(this);
+      background.fill('#FFFFFF');
+      background.stroke('black', 1);
+      background.attrib('opacity', '0.5');
+      background.childOfRoot(this);
 
     }
   }
 
-  public Line(
+
+  public line(
     ax1: number,
     ay1: number,
     ax2: number,
@@ -154,57 +160,59 @@ export class ApgSvgDoc {
     aid = "",
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Line";
+    r.type = eApgSvgNodeTypes.LINE;
     r.tag = "line";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`x1="${ax1}"`);
-    r.params.push(`y1="${this._y(ay1)}"`);
-    r.params.push(`x2="${ax2}"`);
-    r.params.push(`y2="${this._y(ay2)}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`x1="${ax1}"`);
+    r.addParam(`y1="${this.#y(ay1)}"`);
+    r.addParam(`x2="${ax2}"`);
+    r.addParam(`y2="${this.#y(ay2)}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public PolyLine(
+
+  polyline(
     apoints: A2D.Apg2DPoint[],
     aid = "",
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "PolyLine";
+    r.type = eApgSvgNodeTypes.POLYLINE;
     r.tag = "polyline";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
     let pointsSeq = "";
     apoints.forEach((point) => {
-      pointsSeq += ` ${point.x},${this._y(point.y)}`;
+      pointsSeq += ` ${point.x},${this.#y(point.y)}`;
     });
-    r.params.push(`points="${pointsSeq}"`);
+    r.addParam(`points="${pointsSeq}"`);
 
-    this._addNode(r);
+    this.#addNode(r);
     return r;
   }
 
-  public Polygon(
+
+  polygon(
     apoints: A2D.Apg2DPoint[],
     aid = "",
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Polygon";
+    r.type = eApgSvgNodeTypes.POLYGON;
     r.tag = "polygon";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
     let pointsSeq = "";
     apoints.forEach((element) => {
-      pointsSeq += ` ${element.x},${this._y(element.y)}`;
+      pointsSeq += ` ${element.x},${this.#y(element.y)}`;
     });
-    r.params.push(`points="${pointsSeq}"`);
+    r.addParam(`points="${pointsSeq}"`);
 
-    this._addNode(r);
+    this.#addNode(r);
     return r;
   }
 
-  public Rect(
+  rect(
     ax: number,
     ay: number,
     aw: number,
@@ -212,38 +220,38 @@ export class ApgSvgDoc {
     aid = "",
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Rect";
+    r.type = eApgSvgNodeTypes.RECT;
     r.tag = "rect";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`x="${ax}"`);
-    const y = this._y(ay + ah);
-    r.params.push(`y="${y}"`);
-    r.params.push(`width="${aw}"`);
-    r.params.push(`height="${ah}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`x="${ax}"`);
+    const y = this.#y(ay + ah);
+    r.addParam(`y="${y}"`);
+    r.addParam(`width="${aw}"`);
+    r.addParam(`height="${ah}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public Circle(
+  circle(
     acx: number,
     acy: number,
     ar: number,
     aid = "",
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Circle";
+    r.type = eApgSvgNodeTypes.CIRCLE;
     r.tag = "circle";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`cx="${acx}"`);
-    r.params.push(`cy="${this._y(acy)}"`);
-    r.params.push(`r="${ar}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`cx="${acx}"`);
+    r.addParam(`cy="${this.#y(acy)}"`);
+    r.addParam(`r="${ar}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public Arc(
+  arc(
     acenterX: number,
     acenterY: number,
     aradious: number,
@@ -252,28 +260,28 @@ export class ApgSvgDoc {
     aid = "",
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Arc";
+    r.type = eApgSvgNodeTypes.ARC;
     r.tag = "path";
 
     const startAngleRad = A2D.Apg2DUtility.degToRad(astartAngleDeg);
     const endAngleRad = A2D.Apg2DUtility.degToRad(aendAngleDeg);
     const startX = Math.cos(startAngleRad) * aradious + acenterX;
-    const startY = Math.sin(startAngleRad) * aradious + this._y(acenterY);
+    const startY = Math.sin(startAngleRad) * aradious + this.#y(acenterY);
     const endX = Math.cos(endAngleRad) * aradious + acenterX;
-    const endY = Math.sin(endAngleRad) * aradious + this._y(acenterY);
+    const endY = Math.sin(endAngleRad) * aradious + this.#y(acenterY);
 
     const largeArcFlag = (astartAngleDeg - aendAngleDeg) > 180 ? 1 : 0;
     const sweepFlag = astartAngleDeg > aendAngleDeg ? 1 : 0;
 
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
     // Example "M87,189 A92,129 0 1 0 557,101"
-    r.params.push(`d="M${startX},${startY} A${aradious},${aradious} 0 ${largeArcFlag} ${sweepFlag} ${endX},${endY}"`);
-    this._addNode(r);
+    r.addParam(`d="M${startX},${startY} A${aradious},${aradious} 0 ${largeArcFlag} ${sweepFlag} ${endX},${endY}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public Image(
+  image(
     ax: number,
     ay: number,
     aw: number,
@@ -282,20 +290,20 @@ export class ApgSvgDoc {
     aid = "",
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Image";
+    r.type = eApgSvgNodeTypes.IMAGE;
     r.tag = "image";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`x="${ax}"`);
-    r.params.push(`y="${this._y(ay + ah)}"`);
-    r.params.push(`width="${aw}"`);
-    r.params.push(`height="${ah}"`);
-    r.params.push(`href="${ahref}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`x="${ax}"`);
+    r.addParam(`y="${this.#y(ay + ah)}"`);
+    r.addParam(`width="${aw}"`);
+    r.addParam(`height="${ah}"`);
+    r.addParam(`href="${ahref}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public ImagePerc(
+  imagePerc(
     axPerc: number,
     ayPerc: number,
     awPerc: number,
@@ -303,52 +311,52 @@ export class ApgSvgDoc {
     ahref: string,
     aid = "",
   ): ApgSvgNode {
-    return this.Image(
-      this.coordFromViewBoxPerc(axPerc, eApgSvgCoordType.x),
-      this.coordFromViewBoxPerc(ayPerc, eApgSvgCoordType.y),
-      this.coordFromViewBoxPerc(awPerc, eApgSvgCoordType.w),
-      this.coordFromViewBoxPerc(ahPerc, eApgSvgCoordType.h),
+    return this.image(
+      this.#coordFromViewBoxPerc(axPerc, eApgSvgCoordType.x),
+      this.#coordFromViewBoxPerc(ayPerc, eApgSvgCoordType.y),
+      this.#coordFromViewBoxPerc(awPerc, eApgSvgCoordType.w),
+      this.#coordFromViewBoxPerc(ahPerc, eApgSvgCoordType.h),
       ahref,
       aid,
     );
   }
 
-  public Text(
+  text(
     ax: number,
     ay: number,
     atext: string,
     aid = "",
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Text";
+    r.type = eApgSvgNodeTypes.TEXT;
     r.tag = "text";
     r.innerContent.push(atext);
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`x="${ax}"`);
-    r.params.push(`y="${this._y(ay)}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`x="${ax}"`);
+    r.addParam(`y="${this.#y(ay)}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public Use(
+  use(
     ax: number,
     ay: number,
     aid: string,
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Use";
+    r.type = eApgSvgNodeTypes.USE;
     r.tag = "use";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`x="${ax}"`);
-    r.params.push(`y="${this._y(ay)}"`);
-    r.params.push(`xlink:href="#${aid}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`x="${ax}"`);
+    r.addParam(`y="${this.#y(ay)}"`);
+    r.addParam(`xlink:href="#${aid}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public LinearGradient(
+  linearGradient(
     x1: number,
     y1: number,
     x2: number,
@@ -356,37 +364,37 @@ export class ApgSvgDoc {
     aid: string,
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "LinearGradient";
+    r.type = eApgSvgNodeTypes.LINEAR_GRADIENT;
     r.tag = "linearGradient";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`x1="${x1}"`);
-    r.params.push(`y1="${this._y(y1)}"`);
-    r.params.push(`x2="${x2}"`);
-    r.params.push(`y2="${y2}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`x1="${x1}"`);
+    r.addParam(`y1="${this.#y(y1)}"`);
+    r.addParam(`x2="${x2}"`);
+    r.addParam(`y2="${y2}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public RadialGradient(
+  radialGradient(
     cx: number,
     cy: number,
     rad: number,
     aid: string,
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "RadialGradient";
+    r.type = eApgSvgNodeTypes.RADIAL_GRADIENT;
     r.tag = "radialGradient";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`cx="${cx}"`);
-    r.params.push(`cy="${this._y(cy)}"`);
-    r.params.push(`rad="${rad}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`cx="${cx}"`);
+    r.addParam(`cy="${this.#y(cy)}"`);
+    r.addParam(`rad="${rad}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public Pattern(
+  pattern(
     x: number,
     y: number,
     w: number,
@@ -394,26 +402,26 @@ export class ApgSvgDoc {
     aid: string,
   ): ApgSvgNode {
     const r = new ApgSvgNode();
-    r.type = "Pattern";
+    r.type = eApgSvgNodeTypes.PATTERN;
     r.tag = "pattern";
-    r.ID = this._getNextID(aid, r.type);
-    r.params.push(`id="${r.ID}"`);
-    r.params.push(`x="${x}"`);
-    r.params.push(`y="${this._y(y)}"`);
-    r.params.push(`width="${w}"`);
-    r.params.push(`height="${h}"`);
-    this._addNode(r);
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`x="${x}"`);
+    r.addParam(`y="${this.#y(y)}"`);
+    r.addParam(`width="${w}"`);
+    r.addParam(`height="${h}"`);
+    this.#addNode(r);
     return r;
   }
 
-  public Render(): string {
+  render(): string {
 
     const r: string[] = [];
 
     r.push(`
 <svg
-    width="${this.width}px"
-    height="${this.height}px"
+    width="${this._width}px"
+    height="${this._height}px"
     viewBox="${this.renderedViewBox()}"
     version="2.0"
     xmlns="http://www.w3.org/2000/svg"
@@ -421,28 +429,28 @@ export class ApgSvgDoc {
     >
     <!-- Generator: APG - DENO - ApgSvgDoc Renderer -->
     <title>${this.title}</title>
-    <desc>${this.desc}</desc>\n\n`
+    <desc>${this.description}</desc>\n\n`
     );
     const INDENTING_SPACE = 2;
 
     r.push('    <defs>\n');
-    if (this.defsMap.size > 0) {
-      for (const [_key, blockDef] of this.defsMap.entries()) {
-        r.push(`${blockDef.Render(INDENTING_SPACE)}`);
+    if (this._defs.size > 0) {
+      for (const [_key, blockDef] of this._defs.entries()) {
+        r.push(`${blockDef.render(INDENTING_SPACE)}`);
       }
     }
     r.push('    </defs>\n');
 
     r.push('    <style>\n');
-    if (this.stylesMap.size > 0) {
-      for (const [_key, style] of this.stylesMap.entries()) {
+    if (this._styles.size > 0) {
+      for (const [_key, style] of this._styles.entries()) {
         r.push(`${style.Render(INDENTING_SPACE)}`);
       }
     }
     r.push('    </style>\n\n');
 
-    if (this.rootNode) {
-      r.push(...this.rootNode?.Render(1));
+    if (this._rootNode) {
+      r.push(...this._rootNode?.render(1));
     }
 
     r.push(`
@@ -453,7 +461,7 @@ export class ApgSvgDoc {
   }
 
   protected renderedViewBox(): string {
-    const vby = -this.viewboxHeight; // - this.viewboxY;
-    return `${this.viewboxX} ${vby} ${this.viewboxWidth} ${this.viewboxHeight} `;
+    const vby = -this._viewBoxHeight; // - this.viewboxY;
+    return `${this._viewBoxX} ${vby} ${this._viewBoxWidth} ${this._viewBoxHeight} `;
   }
 }

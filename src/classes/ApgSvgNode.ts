@@ -8,36 +8,36 @@
  * @version 0.9.2 [APG 2022/11/24] Github beta
  * -----------------------------------------------------------------------
  */
-import {
-  ApgSvgDoc,
-  eApgSvgAlign,
-  eApgSvgMeetOrSlice,
-  eApgSvgTextAnchor,
-  IApgSvgGradientStop,
-} from "../../mod.ts";
+
+import { eApgSvgAlign, eApgSvgMeetOrSlice } from "../enums/eApgSvgAspectRatio.ts";
+import { eApgSvgTextAnchor } from "../enums/eApgSvgTextAnchor.ts";
+import { eApgSvgNodeTypes } from "../enums/eApgSvgNodeTypes.ts";
+import { IApgSvgGradientStop } from "../interfaces/IApgSvgGradientStop.ts";
+import { ApgSvgDoc } from "./ApgSvgDoc.ts";
+
 
 export class ApgSvgNode {
   public ID = "";
-  public type = "";
+  public type: eApgSvgNodeTypes = eApgSvgNodeTypes.UNDEF;
   public tag = "";
-  public params: string[] = [];
-  public transforms: string[] = [];
-  public children: ApgSvgNode[] = [];
+  private _params: string[] = [];
+  private _transforms: string[] = [];
+  private _children: ApgSvgNode[] = [];
   public innerContent: string[] = [];
 
-  public Clear(aparams = false) {
+  public clear(aparams = false) {
     const ALLOWED_TAGS = "group";
-    this.CheckTag("Clear", ALLOWED_TAGS);
+    this.aheckTag("Clear", ALLOWED_TAGS);
     if (aparams) {
-      this.params = [];
+      this._params = [];
     }
-    this.transforms = [];
-    this.children = [];
+    this._transforms = [];
+    this._children = [];
     this.innerContent = [];
     return this;
   }
 
-  public Render(adepth: number, aspaces = 4): string[] {
+  render(adepth: number, aspaces = 4): string[] {
     const spacer = "".padStart(aspaces, " ");
     const pad = "".padStart(aspaces * adepth, " ");
 
@@ -46,16 +46,16 @@ export class ApgSvgNode {
     // open tag
     r.push(`${pad}<${this.tag}\n`);
 
-    if (this.params.length > 0) {
+    if (this._params.length > 0) {
 
-      this.params.forEach((element) => {
+      this._params.forEach((element) => {
         r.push(`${pad}${spacer}${element}\n`);
       });
 
 
-      if (this.transforms.length > 0) {
+      if (this._transforms.length > 0) {
         r.push(`${pad}${spacer}transform="`);
-        this.transforms.forEach((transform) => {
+        this._transforms.forEach((transform) => {
           r.push(`\n${pad}${spacer}${spacer}${transform}`);
         });
         r.push(`"\n`);
@@ -74,9 +74,9 @@ export class ApgSvgNode {
     }
 
     // TODO maybe inner content and renderd children are incompatible
-    if (this.children.length != 0) {
-      this.children.forEach((element) => {
-        const renderedChildren = element.Render(adepth + 1);
+    if (this._children.length != 0) {
+      this._children.forEach((element) => {
+        const renderedChildren = element.render(adepth + 1);
         r.push(...renderedChildren);
       });
     }
@@ -87,77 +87,85 @@ export class ApgSvgNode {
     return r;
   }
 
-  public ChildOf(aNode: ApgSvgNode): ApgSvgNode {
-    aNode.children.push(this);
+  public childOf(aNode: ApgSvgNode): ApgSvgNode {
+    aNode._children.push(this);
     return this;
   }
 
-  public ChildOfRoot(asvg: ApgSvgDoc): ApgSvgNode {
-    asvg.rootNode.children.push(this);
+  public childOfRoot(asvg: ApgSvgDoc): ApgSvgNode {
+    asvg.addToRoot(this);
     return this;
   }
 
-  public AddChild(anode: ApgSvgNode) {
-    this.children.push(anode);
+  public addChild(anode: ApgSvgNode) {
+    this._children.push(anode);
     return this;
   }
 
-  public DefOf(asvg: ApgSvgDoc): ApgSvgNode {
-    asvg.defsMap.set(this.ID, this);
+  public defOf(asvg: ApgSvgDoc): ApgSvgNode {
+    asvg.addToDefs(this);
     return this;
   }
 
-  public Attrib(aname: string, avalue: string): ApgSvgNode {
+  public attrib(aname: string, avalue: string): ApgSvgNode {
     const newParam = aname + ' = "' + avalue + '"'
-    this.params.push(newParam);
+    this._params.push(newParam);
     return this;
   }
 
-  public Class(aCssClassName: string): ApgSvgNode {
-    this.params.push(`class="${aCssClassName}"`);
+  public addParam(aparam: string): ApgSvgNode {
+    this._params.push(aparam);
     return this;
   }
 
-  public Fill(acolor: string): ApgSvgNode {
-    this.params.push(`fill="${acolor}"`);
+  public class(aCssClassName: string): ApgSvgNode {
+    this._params.push(`class="${aCssClassName}"`);
     return this;
   }
 
-  public StrokeColor(acolor: string): ApgSvgNode {
-    this.params.push(`stroke="${acolor}"`);
+  public fill(acolor: string): ApgSvgNode {
+    this._params.push(`fill="${acolor}"`);
     return this;
   }
 
-  public StrokeWidth(awidth: number): ApgSvgNode {
-    this.params.push(`stroke-width="${awidth}"`);
+  public strokeColor(acolor: string): ApgSvgNode {
+    this._params.push(`stroke="${acolor}"`);
     return this;
   }
 
-  public StrokeDashPattern(adashArray: number[]): ApgSvgNode {
+  public strokeWidth(awidth: number): ApgSvgNode {
+    this._params.push(`stroke-width="${awidth}"`);
+    return this;
+  }
+
+  public strokeDashPattern(adashArray: number[]): ApgSvgNode {
     const pattern = adashArray.toString();
-    this.params.push(`stroke-dasharray="${pattern}"`);
+    this._params.push(`stroke-dasharray="${pattern}"`);
     return this;
   }
 
-  public Stroke(acolor: string, awidth: number): ApgSvgNode {
-    this.params.push(`stroke="${acolor}"`);
-    this.params.push(`stroke-width="${awidth}"`);
+  public stroke(acolor: string, awidth: number): ApgSvgNode {
+    this._params.push(`stroke="${acolor}"`);
+    this._params.push(`stroke-width="${awidth}"`);
     return this;
   }
 
-  public Move(ax: number, ay: number) {
+  public move(ax: number, ay: number) {
     // TODO what if there are multiple move ? UB?
-    this.transforms.push(`translate(${ax} ${-ay})`);
+    this._transforms.push(`translate(${ax} ${-ay})`);
     return this;
   }
 
-  public Rotate(adeg: number, acx: number, acy: number) {
-    this.transforms.push(`rotate(${adeg + 180}, ${acx}, ${-acy})`);
+  public rotate(adeg: number, acx: number, acy: number) {
+    this._transforms.push(`rotate(${adeg + 180}, ${acx}, ${-acy})`);
     return this;
   }
 
-  public AddStop(astop: IApgSvgGradientStop) {
-    if (this.type === "LinearGradient" || this.type === "RadialGradient") {
+  public addStop(astop: IApgSvgGradientStop) {
+    if (
+      this.type === eApgSvgNodeTypes.LINEAR_GRADIENT ||
+      this.type === eApgSvgNodeTypes.RADIAL_GRADIENT
+    ) {
       const inner =
         `<stop offset="${astop.offset}% stop-color="${astop.color}" stop-opacity="${astop ? astop.opacity : 1
         }" />`;
@@ -167,21 +175,21 @@ export class ApgSvgNode {
     return this;
   }
 
-  public AspectRatio(aalign: eApgSvgAlign, amos: eApgSvgMeetOrSlice) {
+  public aspectRatio(aalign: eApgSvgAlign, amos: eApgSvgMeetOrSlice) {
     const ALLOWED_TAGS = "image";
-    this.CheckTag("AspectRatio", ALLOWED_TAGS);
-    this.params.push(`preserveAspectRatio="${aalign} ${amos}"`);
+    this.aheckTag("AspectRatio", ALLOWED_TAGS);
+    this._params.push(`preserveAspectRatio="${aalign} ${amos}"`);
     return this;
   }
 
-  public Anchor(aanchor: eApgSvgTextAnchor) {
+  public anchor(aanchor: eApgSvgTextAnchor) {
     const ALLOWED_TAGS = "text|textPath";
-    this.CheckTag("Anchor", ALLOWED_TAGS);
-    this.params.push(`text-anchor="${aanchor}"`);
+    this.aheckTag("Anchor", ALLOWED_TAGS);
+    this._params.push(`text-anchor="${aanchor}"`);
     return this;
   }
 
-  public CheckTag(amethodName: string, aallowedTags: string) {
+  public aheckTag(amethodName: string, aallowedTags: string) {
     if (aallowedTags.indexOf(this.tag) == -1) {
       throw new Error(
         `${amethodName} method is not compatible with <${this.tag}> tag`,
