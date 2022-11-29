@@ -68,6 +68,16 @@ export class ApgSvgDoc {
     this.#viewBoxBackground();
   }
 
+  topLeft() { 
+    return new A2D.Apg2DPoint(this._viewBoxX, this._viewBoxY);
+  }
+  bottomRight() {
+    return new A2D.Apg2DPoint(
+      this._viewBoxX + this._viewBoxWidth,
+      this._viewBoxY + this._viewBoxHeight
+    );
+  }
+
   #y(ay: number): number {
     //return this.viewboxHeight - ay;
     return -ay;
@@ -122,12 +132,24 @@ export class ApgSvgDoc {
     this._rootNode.addChild(anode);
   }
 
+  getRoot() { 
+    return this._rootNode;
+  }
+
   addToDefs(anode: ApgSvgNode) {
     this._defs.set(anode.ID, anode);
   }
 
-  addToStyles(astyle: ApgSvgStyle) {
+  getFromDef(anodeID: string) {
+    return this._defs.get(anodeID);
+  }
+
+  addStyle(astyle: ApgSvgStyle) {
     this._styles.set(astyle.ID, astyle);
+  }
+
+  getStyle(astyleId: string) {
+    return this._styles.get(astyleId);
   }
 
 
