@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "noImplicitOverride": true
+  },
+  "tasks": {
+    "cache": "deno cache --reload deps.ts"
+  }
+}

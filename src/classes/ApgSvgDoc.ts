@@ -23,10 +23,14 @@ const DEFAULT_HEIGHT = DEFAULT_WIDTH / 16 * 9;
 const DEFAULT_VIEWBOX_WIDTH = 10000;
 const DEFAULT_VIEWBOX_HEIGHT = DEFAULT_VIEWBOX_WIDTH / 16 * 9;
 
+const DEFAULT_ID = "APG_SVG_DOC";
+
 export class ApgSvgDoc {
 
   private _width: number = DEFAULT_WIDTH;
   private _height: number = DEFAULT_HEIGHT;
+
+  private readonly _rootNodeID = "Apg_Svg_Root_Node";
 
   private _viewBoxX = 0;
   private _viewBoxY = 0;
@@ -36,6 +40,7 @@ export class ApgSvgDoc {
 
   public title = "ApgSvgDoc";
   public description = "Default description";
+  public id = "APG_SVG_DOC";
 
   private _rootNode: ApgSvgNode;
   private _nodes: Map<string, ApgSvgNode> = new Map();
@@ -48,15 +53,11 @@ export class ApgSvgDoc {
 
   constructor(
     aw: number = DEFAULT_WIDTH,
-    ah: number = DEFAULT_HEIGHT,
-    aviewBoxHasBackground = true,
+    ah: number = DEFAULT_HEIGHT
   ) {
-    const NODE_ID = "Apg_Svg_Root_Node"
-
     this._width = aw;
     this._height = ah;
-    this._viewBoxHasBackground = aviewBoxHasBackground;
-    this._rootNode = this.group(NODE_ID);
+    this._rootNode = this.group(this._rootNodeID);
   }
 
   setViewbox(ax: number, ay: number, aw: number, ah: number) {
@@ -65,12 +66,12 @@ export class ApgSvgDoc {
     this._viewBoxWidth = aw;
     this._viewBoxHeight = ah;
     this._rootNode.move(0, -this._viewBoxY);
-    this.#viewBoxBackground();
   }
 
-  topLeft() { 
+  topLeft() {
     return new A2D.Apg2DPoint(this._viewBoxX, this._viewBoxY);
   }
+
   bottomRight() {
     return new A2D.Apg2DPoint(
       this._viewBoxX + this._viewBoxWidth,
@@ -132,7 +133,7 @@ export class ApgSvgDoc {
     this._rootNode.addChild(anode);
   }
 
-  getRoot() { 
+  getRoot() {
     return this._rootNode;
   }
 
@@ -153,24 +154,20 @@ export class ApgSvgDoc {
   }
 
 
-  #viewBoxBackground() {
+  viewBoxBackground() {
     const ID = "APG_SVG_DOC_VIEWBOX_BACKGROUND";
 
-    if (this._viewBoxHasBackground) {
+    const background = this.rect(
+      this._viewBoxX,
+      this._viewBoxY,
+      this._viewBoxWidth,
+      this._viewBoxHeight,
+      ID,
+    );
+    background.fill('#FFFFFF');
+    background.stroke('black', 1);
+    background.childOfRoot(this);
 
-      const background = this.rect(
-        this._viewBoxX,
-        this._viewBoxY,
-        this._viewBoxWidth,
-        this._viewBoxHeight,
-        ID,
-      );
-      background.fill('#FFFFFF');
-      background.stroke('black', 1);
-      background.attrib('opacity', '0.5');
-      background.childOfRoot(this);
-
-    }
   }
 
 
@@ -442,6 +439,7 @@ export class ApgSvgDoc {
 
     r.push(`
 <svg
+    id="${this.id}"
     width="${this._width}px"
     height="${this._height}px"
     viewBox="${this.renderedViewBox()}"
