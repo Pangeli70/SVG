@@ -23,7 +23,6 @@ const DEFAULT_HEIGHT = DEFAULT_WIDTH / 16 * 9;
 const DEFAULT_VIEWBOX_WIDTH = 10000;
 const DEFAULT_VIEWBOX_HEIGHT = DEFAULT_VIEWBOX_WIDTH / 16 * 9;
 
-const DEFAULT_ID = "APG_SVG_DOC";
 
 export class ApgSvgDoc {
 
@@ -60,6 +59,7 @@ export class ApgSvgDoc {
     this._rootNode = this.group(this._rootNodeID);
   }
 
+
   setViewbox(ax: number, ay: number, aw: number, ah: number) {
     this._viewBoxX = ax;
     this._viewBoxY = ay;
@@ -68,9 +68,11 @@ export class ApgSvgDoc {
     this._rootNode.move(0, -this._viewBoxY);
   }
 
+
   topLeft() {
     return new A2D.Apg2DPoint(this._viewBoxX, this._viewBoxY);
   }
+
 
   bottomRight() {
     return new A2D.Apg2DPoint(
@@ -79,10 +81,12 @@ export class ApgSvgDoc {
     );
   }
 
+
   #y(ay: number): number {
     //return this.viewboxHeight - ay;
     return -ay;
   }
+
 
   #nextID(aid: string, atype: string): string {
     let r = aid;
@@ -98,10 +102,12 @@ export class ApgSvgDoc {
     return r;
   }
 
+
   #addNode(anode: ApgSvgNode) {
     this._idCounter++;
     this._nodes.set(anode.ID, anode);
   }
+
 
   #coordFromViewBoxPerc(aperc: number, atype: eApgSvgCoordType) {
     if (aperc < 0 || aperc > 1) {
@@ -119,6 +125,7 @@ export class ApgSvgDoc {
     }
   }
 
+  
   group(aid = ""): ApgSvgNode {
     const r = new ApgSvgNode();
     r.type = eApgSvgNodeTypes.Group;
@@ -129,25 +136,31 @@ export class ApgSvgDoc {
     return r;
   }
 
+
   addToRoot(anode: ApgSvgNode) {
     this._rootNode.addChild(anode);
   }
+
 
   getRoot() {
     return this._rootNode;
   }
 
-  addToDefs(anode: ApgSvgNode) {
-    this._defs.set(anode.ID, anode);
+
+  addToDefs(adefId: string, anode: ApgSvgNode) {
+    this._defs.set(adefId, anode);
   }
 
-  getFromDef(anodeID: string) {
-    return this._defs.get(anodeID);
+
+  getFromDef(adefId: string) {
+    return this._defs.get(adefId);
   }
+
 
   addStyle(astyle: ApgSvgStyle) {
     this._styles.set(astyle.ID, astyle);
   }
+
 
   getStyle(astyleId: string) {
     return this._styles.get(astyleId);
@@ -231,6 +244,7 @@ export class ApgSvgDoc {
     return r;
   }
 
+
   rect(
     ax: number,
     ay: number,
@@ -252,6 +266,7 @@ export class ApgSvgDoc {
     return r;
   }
 
+
   circle(
     acx: number,
     acy: number,
@@ -269,6 +284,7 @@ export class ApgSvgDoc {
     this.#addNode(r);
     return r;
   }
+
 
   arc(
     acenterX: number,
@@ -300,6 +316,7 @@ export class ApgSvgDoc {
     return r;
   }
 
+
   image(
     ax: number,
     ay: number,
@@ -322,6 +339,7 @@ export class ApgSvgDoc {
     return r;
   }
 
+
   imagePerc(
     axPerc: number,
     ayPerc: number,
@@ -339,6 +357,7 @@ export class ApgSvgDoc {
       aid,
     );
   }
+
 
   text(
     ax: number,
@@ -358,6 +377,7 @@ export class ApgSvgDoc {
     return r;
   }
 
+
   use(
     ax: number,
     ay: number,
@@ -374,6 +394,7 @@ export class ApgSvgDoc {
     this.#addNode(r);
     return r;
   }
+
 
   linearGradient(
     x1: number,
@@ -395,6 +416,7 @@ export class ApgSvgDoc {
     return r;
   }
 
+
   radialGradient(
     cx: number,
     cy: number,
@@ -412,6 +434,7 @@ export class ApgSvgDoc {
     this.#addNode(r);
     return r;
   }
+
 
   pattern(
     x: number,
@@ -432,6 +455,7 @@ export class ApgSvgDoc {
     this.#addNode(r);
     return r;
   }
+
 
   render(): string {
 
@@ -479,6 +503,7 @@ export class ApgSvgDoc {
 
     return r.join("");
   }
+
 
   protected renderedViewBox(): string {
     const vby = -this._viewBoxHeight; // - this.viewboxY;
