@@ -103,7 +103,7 @@ export class ApgSvgNode {
   }
 
   public defOf(asvg: ApgSvgDoc): ApgSvgNode {
-    asvg.addToDefs(this);
+    asvg.addToDefs(this.ID, this);
     return this;
   }
 

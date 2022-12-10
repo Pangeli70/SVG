@@ -89,13 +89,13 @@ export class ApgSvgDoc {
 
 
   #nextID(aid: string, atype: string): string {
-    let r = aid;
     let noID = false;
     if (aid === "") {
       noID = true;
     } else if (this._nodes.has(aid)) {
       noID = true;
     }
+    let r = aid;
     if (noID) {
       r = atype + "-" + this._idCounter.toString();
     }
@@ -390,7 +390,7 @@ export class ApgSvgDoc {
     r.addParam(`id="${r.ID}"`);
     r.addParam(`x="${ax}"`);
     r.addParam(`y="${this.#y(ay)}"`);
-    r.addParam(`xlink:href="#${aid}"`);
+    r.addParam(`href="#${aid}"`);
     this.#addNode(r);
     return r;
   }
