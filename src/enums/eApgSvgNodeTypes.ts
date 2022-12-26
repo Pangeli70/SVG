@@ -20,6 +20,7 @@ export enum eApgSvgNodeTypes {
     ARC = "Arc",
     IMAGE = "Image",
     TEXT = "Text",
+    PATH = "Path",
     USE = "Use",
     LINEAR_GRADIENT = "LinearGradient",
     RADIAL_GRADIENT = "RadialGradient",

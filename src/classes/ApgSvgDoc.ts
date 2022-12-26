@@ -298,8 +298,8 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.ARC;
     r.tag = "path";
 
-    const startAngleRad = A2D.Apg2DUtility.degToRad(astartAngleDeg);
-    const endAngleRad = A2D.Apg2DUtility.degToRad(aendAngleDeg);
+    const startAngleRad = A2D.Apg2DUtility.DegToRad(astartAngleDeg);
+    const endAngleRad = A2D.Apg2DUtility.DegToRad(aendAngleDeg);
     const startX = Math.cos(startAngleRad) * aradious + acenterX;
     const startY = Math.sin(startAngleRad) * aradious + this.#y(acenterY);
     const endX = Math.cos(endAngleRad) * aradious + acenterX;
@@ -373,6 +373,21 @@ export class ApgSvgDoc {
     r.addParam(`id="${r.ID}"`);
     r.addParam(`x="${ax}"`);
     r.addParam(`y="${this.#y(ay)}"`);
+    this.#addNode(r);
+    return r;
+  }
+
+  
+  path(
+    ainstructions: string,
+    aid = "",
+  ): ApgSvgNode {
+    const r = new ApgSvgNode();
+    r.type = eApgSvgNodeTypes.PATH;
+    r.tag = "path";
+    r.ID = this.#nextID(aid, r.type);
+    r.addParam(`id="${r.ID}"`);
+    r.addParam(`d="${ainstructions}"`);
     this.#addNode(r);
     return r;
   }
