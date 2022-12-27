@@ -9,7 +9,10 @@
  * -----------------------------------------------------------------------
  */
 
-import { ApgSvgStyleAttribute, eApgSvgStyleType } from "../../mod.ts";
+import { eApgSvgStyleType } from "../enums/eApgSvgStyleType.ts";
+import { ApgSvgStyleAttribute } from "./ApgSvgStyleAttribute.ts";
+
+
 
 export class ApgSvgStyle {
   public ID = "";

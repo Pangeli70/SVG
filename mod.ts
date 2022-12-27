@@ -16,8 +16,9 @@ export { eApgSvgCoordType } from "./src/enums/eApgSvgCoordType.ts";
 export { eApgSvgAlign, eApgSvgMeetOrSlice } from "./src/enums/eApgSvgAspectRatio.ts";
 export { eApgSvgPathCommands } from "./src/enums/eApgSvgPathCommands.ts";
 
-export type { IApgSvgStroke } from "./src/interfaces/IApgSvgStroke.ts";
-export type { IApgSvgFill } from "./src/interfaces/IApgSvgFill.ts";
+export type { IApgSvgStrokeStyle } from "./src/interfaces/IApgSvgStrokeStyle.ts";
+export type { IApgSvgFillStyle } from "./src/interfaces/IApgSvgFillStyle.ts";
+export type { IApgSvgTextStyle } from "./src/interfaces/IApgSvgTextStyle.ts";
 export type { IApgSvgLinearGradient } from "./src/interfaces/IApgSvgLinearGradient.ts";
 export type { IApgSvgGradientStop } from "./src/interfaces/IApgSvgGradientStop.ts";
 export type { IApgSvgPathInstruction } from "./src/interfaces/IApgSvgPathInstruction.ts";

@@ -73,7 +73,7 @@ export class ApgSvgNode {
       });
     }
 
-    // TODO maybe inner content and renderd children are incompatible
+    // TODO @9 APG ... -- maybe inner content and renderd children are incompatible
     if (this._children.length != 0) {
       this._children.forEach((element) => {
         const renderedChildren = element.render(adepth + 1);
@@ -151,7 +151,7 @@ export class ApgSvgNode {
   }
 
   public move(ax: number, ay: number) {
-    // TODO what if there are multiple move ? UB?
+    // TODO @9 APG ... -- what if there are multiple translations? how do they merge ? UB?
     this._transforms.push(`translate(${ax} ${-ay})`);
     return this;
   }

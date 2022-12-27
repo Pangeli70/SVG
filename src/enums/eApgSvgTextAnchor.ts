@@ -8,6 +8,7 @@
  * @version 0.9.2 [APG 2022/11/24] Github beta
  * -----------------------------------------------------------------------
  */
+
 export enum eApgSvgTextAnchor {
   start = "start",
   middle = "middle",
