@@ -13,6 +13,7 @@ import { eApgSvgAlign, eApgSvgMeetOrSlice } from "../enums/eApgSvgAspectRatio.ts
 import { eApgSvgTextAnchor } from "../enums/eApgSvgTextAnchor.ts";
 import { eApgSvgNodeTypes } from "../enums/eApgSvgNodeTypes.ts";
 import { IApgSvgGradientStop } from "../interfaces/IApgSvgGradientStop.ts";
+import { IApgSvgTextStyle } from "../interfaces/IApgSvgTextStyle.ts";
 import { ApgSvgDoc } from "./ApgSvgDoc.ts";
 
 
@@ -27,7 +28,7 @@ export class ApgSvgNode {
 
   public clear(aparams = false) {
     const ALLOWED_TAGS = "group";
-    this.aheckTag("Clear", ALLOWED_TAGS);
+    this.#checkTag("Clear", ALLOWED_TAGS);
     if (aparams) {
       this._params = [];
     }
@@ -177,19 +178,39 @@ export class ApgSvgNode {
 
   public aspectRatio(aalign: eApgSvgAlign, amos: eApgSvgMeetOrSlice) {
     const ALLOWED_TAGS = "image";
-    this.aheckTag("AspectRatio", ALLOWED_TAGS);
+    this.#checkTag("AspectRatio", ALLOWED_TAGS);
     this._params.push(`preserveAspectRatio="${aalign} ${amos}"`);
     return this;
   }
 
   public anchor(aanchor: eApgSvgTextAnchor) {
     const ALLOWED_TAGS = "text|textPath";
-    this.aheckTag("Anchor", ALLOWED_TAGS);
+    this.#checkTag("Anchor", ALLOWED_TAGS);
     this._params.push(`text-anchor="${aanchor}"`);
     return this;
   }
 
-  public aheckTag(amethodName: string, aallowedTags: string) {
+
+  textStyle(
+    atextStyle: IApgSvgTextStyle,
+  ) {
+    const ALLOWED_TAGS = "text|textPath";
+    this.#checkTag("TextStyle", ALLOWED_TAGS);
+    this.attrib("font-family", `${atextStyle.font}`);
+    this.attrib("font-size", `${atextStyle.size}`);
+    this.attrib("text-anchor", `${atextStyle.anchor}`);
+    if (atextStyle.italic) {
+      this.attrib("font-style", "italic");
+    }
+    if (atextStyle.bold) {
+      this.attrib("font-weight", "bold");
+    }
+    this.fill(atextStyle.fill.color);
+    this.stroke(atextStyle.stroke.color, atextStyle.stroke.width);
+    return this;
+  }
+
+  #checkTag(amethodName: string, aallowedTags: string) {
     if (aallowedTags.indexOf(this.tag) == -1) {
       throw new Error(
         `${amethodName} method is not compatible with <${this.tag}> tag`,

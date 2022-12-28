@@ -13,6 +13,7 @@
 export { eApgSvgStyleType } from "./src/enums/eApgSvgStyleType.ts";
 export { eApgSvgTextAnchor } from "./src/enums/eApgSvgTextAnchor.ts";
 export { eApgSvgCoordType } from "./src/enums/eApgSvgCoordType.ts";
+export { eApgSvgNodeTypes } from "./src/enums/eApgSvgNodeTypes.ts";
 export { eApgSvgAlign, eApgSvgMeetOrSlice } from "./src/enums/eApgSvgAspectRatio.ts";
 export { eApgSvgPathCommands } from "./src/enums/eApgSvgPathCommands.ts";
 
