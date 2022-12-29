@@ -194,7 +194,7 @@ export class ApgSvgNode {
   textStyle(
     atextStyle: IApgSvgTextStyle,
   ) {
-    const ALLOWED_TAGS = "text|textPath";
+    const ALLOWED_TAGS = "g|text|textPath";
     this.#checkTag("TextStyle", ALLOWED_TAGS);
     this.attrib("font-family", `${atextStyle.font}`);
     this.attrib("font-size", `${atextStyle.size}`);
