@@ -9,6 +9,10 @@
  * @version 0.9.3 [APG 2022/12/27] Cad integration
  * -----------------------------------------------------------------------
  */
+
+/**
+ * Svg Fill style 
+ */
 export interface IApgSvgFillStyle {
   color: string;
   opacity: number;

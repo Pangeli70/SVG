@@ -17,12 +17,13 @@ export { eApgSvgNodeTypes } from "./src/enums/eApgSvgNodeTypes.ts";
 export { eApgSvgAlign, eApgSvgMeetOrSlice } from "./src/enums/eApgSvgAspectRatio.ts";
 export { eApgSvgPathCommands } from "./src/enums/eApgSvgPathCommands.ts";
 
-export type { IApgSvgStrokeStyle } from "./src/interfaces/IApgSvgStrokeStyle.ts";
 export type { IApgSvgFillStyle } from "./src/interfaces/IApgSvgFillStyle.ts";
-export type { IApgSvgTextStyle } from "./src/interfaces/IApgSvgTextStyle.ts";
 export type { IApgSvgLinearGradient } from "./src/interfaces/IApgSvgLinearGradient.ts";
 export type { IApgSvgGradientStop } from "./src/interfaces/IApgSvgGradientStop.ts";
 export type { IApgSvgPathInstruction } from "./src/interfaces/IApgSvgPathInstruction.ts";
+export type { IApgSvgStrokeStyle } from "./src/interfaces/IApgSvgStrokeStyle.ts";
+export type { IApgSvgTextStyle } from "./src/interfaces/IApgSvgTextStyle.ts";
+export type { IApgSvgTransforms } from "./src/interfaces/IApgSvgTransforms.ts";
 
 export { ApgSvgDoc } from "./src/classes/ApgSvgDoc.ts";
 export { ApgSvgNode } from "./src/classes/ApgSvgNode.ts";

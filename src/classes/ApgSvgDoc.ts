@@ -13,6 +13,7 @@ import { A2D } from "../../deps.ts";
 
 import { eApgSvgCoordType } from "../enums/eApgSvgCoordType.ts";
 import { eApgSvgNodeTypes } from "../enums/eApgSvgNodeTypes.ts";
+import { IApgSvgTransforms } from "../interfaces/IApgSvgTransforms.ts";
 import { ApgSvgNode } from "./ApgSvgNode.ts";
 import { ApgSvgStyle } from "./ApgSvgStyle.ts";
 
@@ -48,7 +49,6 @@ export class ApgSvgDoc {
 
   private _idCounter = 1;
 
-  private _viewBoxHasBackground = false;
 
   constructor(
     aw: number = DEFAULT_WIDTH,
@@ -69,12 +69,11 @@ export class ApgSvgDoc {
   }
 
 
-  topLeft() {
+  bottomLeft() {
     return new A2D.Apg2DPoint(this._viewBoxX, this._viewBoxY);
   }
 
-
-  bottomRight() {
+  topRight() {
     return new A2D.Apg2DPoint(
       this._viewBoxX + this._viewBoxWidth,
       this._viewBoxY + this._viewBoxHeight
@@ -125,13 +124,13 @@ export class ApgSvgDoc {
     }
   }
 
-  
+
   group(aid = ""): ApgSvgNode {
     const r = new ApgSvgNode();
     r.type = eApgSvgNodeTypes.Group;
     r.tag = "g";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
+    r.attrib("id", `${r.ID}`);
     this.#addNode(r);
     return r;
   }
@@ -154,6 +153,10 @@ export class ApgSvgDoc {
 
   getFromDef(adefId: string) {
     return this._defs.get(adefId);
+  }
+
+  getDefs() {
+    return Array.from(this._defs.keys());
   }
 
 
@@ -195,11 +198,11 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.LINE;
     r.tag = "line";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`x1="${ax1}"`);
-    r.addParam(`y1="${this.#y(ay1)}"`);
-    r.addParam(`x2="${ax2}"`);
-    r.addParam(`y2="${this.#y(ay2)}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("x1", `${ax1}`);
+    r.attrib("y1", `${this.#y(ay1)}`);
+    r.attrib("x2", `${ax2}`);
+    r.attrib("y2", `${this.#y(ay2)}`);
     this.#addNode(r);
     return r;
   }
@@ -213,12 +216,12 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.POLYLINE;
     r.tag = "polyline";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
+    r.attrib("id", `${r.ID}`);
     let pointsSeq = "";
     apoints.forEach((point) => {
       pointsSeq += ` ${point.x},${this.#y(point.y)}`;
     });
-    r.addParam(`points="${pointsSeq}"`);
+    r.attrib("points", `${pointsSeq}`);
 
     this.#addNode(r);
     return r;
@@ -233,12 +236,12 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.POLYGON;
     r.tag = "polygon";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
+    r.attrib("id", `${r.ID}`);
     let pointsSeq = "";
     apoints.forEach((element) => {
       pointsSeq += ` ${element.x},${this.#y(element.y)}`;
     });
-    r.addParam(`points="${pointsSeq}"`);
+    r.attrib("points", `${pointsSeq}`);
 
     this.#addNode(r);
     return r;
@@ -256,12 +259,12 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.RECT;
     r.tag = "rect";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`x="${ax}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("x", `${ax}`);
     const y = this.#y(ay + ah);
-    r.addParam(`y="${y}"`);
-    r.addParam(`width="${aw}"`);
-    r.addParam(`height="${ah}"`);
+    r.attrib("y", `${y}`);
+    r.attrib("width", `${aw}`);
+    r.attrib("height", `${ah}`);
     this.#addNode(r);
     return r;
   }
@@ -277,10 +280,10 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.CIRCLE;
     r.tag = "circle";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`cx="${acx}"`);
-    r.addParam(`cy="${this.#y(acy)}"`);
-    r.addParam(`r="${ar}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("cx", `${acx}`);
+    r.attrib("cy", `${this.#y(acy)}`);
+    r.attrib("r", `${ar}`);
     this.#addNode(r);
     return r;
   }
@@ -309,9 +312,9 @@ export class ApgSvgDoc {
     const sweepFlag = astartAngleDeg > aendAngleDeg ? 1 : 0;
 
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
+    r.attrib("id", `${r.ID}`);
     // Example "M87,189 A92,129 0 1 0 557,101"
-    r.addParam(`d="M${startX},${startY} A${aradious},${aradious} 0 ${largeArcFlag} ${sweepFlag} ${endX},${endY}"`);
+    r.attrib("d", `M${startX},${startY} A${aradious},${aradious} 0 ${largeArcFlag} ${sweepFlag} ${endX},${endY}`);
     this.#addNode(r);
     return r;
   }
@@ -329,12 +332,12 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.IMAGE;
     r.tag = "image";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`x="${ax}"`);
-    r.addParam(`y="${this.#y(ay + ah)}"`);
-    r.addParam(`width="${aw}"`);
-    r.addParam(`height="${ah}"`);
-    r.addParam(`href="${ahref}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("x", `${ax}`);
+    r.attrib("y", `${this.#y(ay + ah)}`);
+    r.attrib("width", `${aw}`);
+    r.attrib("height", `${ah}`);
+    r.attrib("href", `${ahref}`);
     this.#addNode(r);
     return r;
   }
@@ -358,26 +361,50 @@ export class ApgSvgDoc {
     );
   }
 
-
   text(
     ax: number,
     ay: number,
     atext: string,
+    alineSpacing: number,
     aid = "",
   ): ApgSvgNode {
-    const r = new ApgSvgNode();
-    r.type = eApgSvgNodeTypes.TEXT;
-    r.tag = "text";
-    r.innerContent.push(atext);
-    r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`x="${ax}"`);
-    r.addParam(`y="${this.#y(ay)}"`);
+    const t = new ApgSvgNode();
+    t.type = eApgSvgNodeTypes.TEXT;
+    t.tag = "text";
+    t.ID = this.#nextID(aid, t.type);
+
+    const innerText = this.#multilineText(atext, alineSpacing);
+    t.innerContent(innerText);
+    t.attrib("id", `${t.ID}_text`);
+    t.attrib("x", "0");
+    t.attrib("y", "0");
+
+    const r = this.group(t.ID);
+    r.move(ax, ay);
+    t.childOf(r);
     this.#addNode(r);
     return r;
   }
 
-  
+  #multilineText(
+    atext: string,
+    alineSpacing: number
+  ) {
+    const lines = atext.split("\n");
+    if (lines.length == 1) {
+      return atext;
+    }
+    const r: string[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const newY = alineSpacing * i;
+      const spanLine = `<tspan x="0" y="${newY}" >${line}</tspan>`;
+      r.push(spanLine);
+    }
+    return r.join("\n");
+  }
+
+
   path(
     ainstructions: string,
     aid = "",
@@ -386,29 +413,78 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.PATH;
     r.tag = "path";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`d="${ainstructions}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("d", `${ainstructions}`);
     this.#addNode(r);
     return r;
   }
 
 
   use(
+    aid: string,
     ax: number,
     ay: number,
-    aid: string,
   ): ApgSvgNode {
     const r = new ApgSvgNode();
     r.type = eApgSvgNodeTypes.USE;
     r.tag = "use";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`x="${ax}"`);
-    r.addParam(`y="${this.#y(ay)}"`);
-    r.addParam(`href="#${aid}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("xlink:href", `#${aid}`);
+    r.attrib("x", `${ax}`);
+    r.attrib("y", `${this.#y(ay)}`);
     this.#addNode(r);
     return r;
   }
+
+  useT(
+    aid: string,
+    ax: number,
+    ay: number,
+    atransforms: IApgSvgTransforms
+  ): ApgSvgNode {
+
+    const u = new ApgSvgNode();
+    u.type = eApgSvgNodeTypes.USE;
+    u.tag = "use";
+    u.ID = this.#nextID(aid, u.type);
+    u.attrib("id", `${u.ID}`);
+    u.attrib("xlink:href", `#${aid}`);
+    let x = ax;
+    let y = this.#y(ay);
+
+    let trasfs = "";
+    if (atransforms.scale) {
+      trasfs += ` scale(${atransforms.scale.x}, ${atransforms.scale.y})`
+      x /= atransforms.scale.x;
+      y /= atransforms.scale.y;
+    }
+
+    if (atransforms.translate) {
+      let tx = atransforms.translate.x;
+      let ty = this.#y(atransforms.translate.y);
+      if (atransforms.scale) {
+        tx /= atransforms.scale.x;
+        ty /= atransforms.scale.y;
+      }
+      x += tx;
+      y += ty;
+    }
+
+    if (atransforms.rotate) {
+      trasfs += ` rotate(${atransforms.rotate.a}, ${x}, ${y})`
+    }
+
+    u.attrib("x", `${x}`);
+    u.attrib("y", `${y}`);
+    if (trasfs != "") { 
+      u.attrib("transform", trasfs);
+    }
+
+    this.#addNode(u);
+    return u;
+  }
+
 
 
   linearGradient(
@@ -422,11 +498,11 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.LINEAR_GRADIENT;
     r.tag = "linearGradient";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`x1="${x1}"`);
-    r.addParam(`y1="${this.#y(y1)}"`);
-    r.addParam(`x2="${x2}"`);
-    r.addParam(`y2="${y2}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("x1", `${x1}`);
+    r.attrib("y1", `${this.#y(y1)}`);
+    r.attrib("x2", `${x2}`);
+    r.attrib("y2", `${y2}`);
     this.#addNode(r);
     return r;
   }
@@ -442,10 +518,10 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.RADIAL_GRADIENT;
     r.tag = "radialGradient";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`cx="${cx}"`);
-    r.addParam(`cy="${this.#y(cy)}"`);
-    r.addParam(`rad="${rad}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("cx", `${cx}`);
+    r.attrib("cy", `${this.#y(cy)}`);
+    r.attrib("rad", `${rad}`);
     this.#addNode(r);
     return r;
   }
@@ -462,11 +538,11 @@ export class ApgSvgDoc {
     r.type = eApgSvgNodeTypes.PATTERN;
     r.tag = "pattern";
     r.ID = this.#nextID(aid, r.type);
-    r.addParam(`id="${r.ID}"`);
-    r.addParam(`x="${x}"`);
-    r.addParam(`y="${this.#y(y)}"`);
-    r.addParam(`width="${w}"`);
-    r.addParam(`height="${h}"`);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("x", `${x}`);
+    r.attrib("y", `${this.#y(y)}`);
+    r.attrib("width", `${w}`);
+    r.attrib("height", `${h}`);
     this.#addNode(r);
     return r;
   }
@@ -478,6 +554,7 @@ export class ApgSvgDoc {
 
     r.push(`
 <svg
+    style="display:block; margin:auto; border: 2px; border-color: black; background-color: #888888;"
     id="${this.id}"
     width="${this._width}px"
     height="${this._height}px"

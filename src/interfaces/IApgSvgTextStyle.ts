@@ -16,19 +16,21 @@ import { eApgSvgTextAnchor } from "../enums/eApgSvgTextAnchor.ts";
 
 export interface IApgSvgTextStyle {
   /** Name of the font */
-  font: string;
+  font?: string;
   /** Height of the font in pixels */
   size: number;
-  /**  Position of the text */
-  anchor: eApgSvgTextAnchor;
-  italic: boolean;
-  bold: boolean;
+  /** Average font H/W Ratio depends on Font Family and variations (italic, bold)*/
+  aspectRatio: number;
+  /** Line height factor. Eg. 1.4 times the size. If not specified is 1 */
+  leading?: number;/**  Position of the text */
+  anchor?: eApgSvgTextAnchor;
+  /** The font is in italic variations */
+  italic?: boolean;
+  /** The font in in bold variation */
+  bold?: boolean;
   /**  Fill style */
   fill: IApgSvgFillStyle;
   /** Stroke style */
-  stroke: IApgSvgStrokeStyle;
-  /** Average font H/W Ratio depends from Font Family*/
-  HWRatio: number;
-  /** Line spacing factor */
-  leading?: number;
+  stroke?: IApgSvgStrokeStyle;
+
 }

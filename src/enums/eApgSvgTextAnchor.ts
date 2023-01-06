@@ -9,6 +9,9 @@
  * -----------------------------------------------------------------------
  */
 
+/**
+ * Text anchor position
+ */
 export enum eApgSvgTextAnchor {
   start = "start",
   middle = "middle",

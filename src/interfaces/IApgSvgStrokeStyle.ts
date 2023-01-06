@@ -13,4 +13,5 @@ export interface IApgSvgStrokeStyle {
   color: string;
   width: number;
   dashPattern?:number[];
+  dashOffset?:number;
 }
