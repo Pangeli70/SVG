@@ -8,8 +8,13 @@
  * @version 0.9.2 [APG 2022/11/24] Github beta
  * -----------------------------------------------------------------------
  */
+
+/** Gradient stop */
 export interface IApgSvgGradientStop {
+  /** Percentage between 0 and 100*/
   offset: number;
+  
   color: string;
+  /** Between 1 and 0 */
   opacity: number;
 }

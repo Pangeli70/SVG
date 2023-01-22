@@ -27,9 +27,6 @@ export class ApgSvgNode {
   private _innerContent: string[] = [];
 
 
-  innerContent(astring: string) {
-    this._innerContent.push(astring);
-  }
 
   clear(aparams = false) {
     const ALLOWED_TAGS = "group";
@@ -159,19 +156,6 @@ export class ApgSvgNode {
     return this;
   }
 
-  addStop(astop: IApgSvgGradientStop) {
-    if (
-      this.type === eApgSvgNodeTypes.LINEAR_GRADIENT ||
-      this.type === eApgSvgNodeTypes.RADIAL_GRADIENT
-    ) {
-      const inner =
-        `<stop offset="${astop.offset}% stop-color="${astop.color}" stop-opacity="${astop ? astop.opacity : 1
-        }" />`;
-
-      this._innerContent.push(inner);
-    }
-    return this;
-  }
 
   aspectRatio(aalign: eApgSvgAlign, amos: eApgSvgMeetOrSlice) {
     const ALLOWED_TAGS = "image";
@@ -203,6 +187,27 @@ export class ApgSvgNode {
     }
     return this;
   }
+
+
+  rawInnerContent(astring: string) {
+    this._innerContent.push(astring);
+    return this;
+  }
+
+
+  addStop(astop: IApgSvgGradientStop) {
+    if (
+      this.type === eApgSvgNodeTypes.LINEAR_GRADIENT ||
+      this.type === eApgSvgNodeTypes.RADIAL_GRADIENT
+    ) {
+      const inner =
+        `<stop offset="${astop.offset}% stop-color="${astop.color}" stop-opacity="${astop.opacity || 1}" />`;
+
+      this._innerContent.push(inner);
+    }
+    return this;
+  }
+
 
   #checkTag(amethodName: string, aallowedTags: string) {
     if (aallowedTags.indexOf(this.tag) == -1) {

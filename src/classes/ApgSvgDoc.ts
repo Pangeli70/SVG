@@ -374,7 +374,7 @@ export class ApgSvgDoc {
     t.ID = this.#nextID(aid, t.type);
 
     const innerText = this.#multilineText(atext, alineSpacing);
-    t.innerContent(innerText);
+    t.rawInnerContent(innerText);
     t.attrib("id", `${t.ID}_text`);
     t.attrib("x", "0");
     t.attrib("y", "0");
