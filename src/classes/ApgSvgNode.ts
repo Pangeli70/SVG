@@ -201,7 +201,7 @@ export class ApgSvgNode {
       this.type === eApgSvgNodeTypes.RADIAL_GRADIENT
     ) {
       const inner =
-        `<stop offset="${astop.offset}%" stop-color="${astop.color}" stop-opacity="${astop.opacity || 1}" />`;
+        `<stop offset="${astop.offset}%" stop-color="${astop.color}" stop-opacity="${astop.opacity == undefined ? 1 : astop.opacity}" />`;
 
       this._innerContent.push(inner);
     }
