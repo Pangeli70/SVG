@@ -528,8 +528,6 @@ export class ApgSvgDoc {
 
 
   pattern(
-    x: number,
-    y: number,
     w: number,
     h: number,
     aid: string,
@@ -539,10 +537,11 @@ export class ApgSvgDoc {
     r.tag = "pattern";
     r.ID = this.#nextID(aid, r.type);
     r.attrib("id", `${r.ID}`);
-    r.attrib("x", `${x}`);
-    r.attrib("y", `${this.#y(y)}`);
+    r.attrib("viewBox", `0 ${-h} ${w} ${h}`);
     r.attrib("width", `${w}`);
     r.attrib("height", `${h}`);
+    r.attrib("patternUnits", "userSpaceOnUse");
+    r.attrib("preserveAspectRatio", "xMidYMid slice");
     this.#addNode(r);
     return r;
   }
@@ -554,14 +553,11 @@ export class ApgSvgDoc {
 
     r.push(`
 <svg
-    style="display:block; margin:auto; border: 2px; border-color: black; background-color: #888888;"
     id="${this.id}"
-    width="${this._width}px"
-    height="${this._height}px"
     viewBox="${this.renderedViewBox()}"
-    version="2.0"
+    width="${this._width}"
+    height="${this._height}"
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
     >
     <!-- Generator: APG - DENO - ApgSvgDoc Renderer -->
     <title>${this.title}</title>
@@ -572,7 +568,8 @@ export class ApgSvgDoc {
     r.push('    <defs>\n');
     if (this._defs.size > 0) {
       for (const [_key, blockDef] of this._defs.entries()) {
-        r.push(`${blockDef.render(INDENTING_SPACE)}`);
+        const renderedDef = blockDef.render(INDENTING_SPACE);
+        r.push(...renderedDef);
       }
     }
     r.push('    </defs>\n');
@@ -580,13 +577,16 @@ export class ApgSvgDoc {
     r.push('    <style>\n');
     if (this._styles.size > 0) {
       for (const [_key, style] of this._styles.entries()) {
-        r.push(`${style.Render(INDENTING_SPACE)}`);
+        const renderedStyle = style.Render(INDENTING_SPACE);
+        r.push(`${renderedStyle}`);
       }
     }
     r.push('    </style>\n\n');
 
+    //TODO @6 APG 20230128 investigate performance issues with this destructuring concatenation
     if (this._rootNode) {
-      r.push(...this._rootNode?.render(1));
+      const renderedNodes = this._rootNode?.render(1);
+      r.push(...renderedNodes);
     }
 
     r.push(`

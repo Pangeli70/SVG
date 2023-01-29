@@ -59,7 +59,7 @@ export class ApgSvgNode {
       if (this._transforms.length > 0) {
         r.push(`${pad}${spacer}transform="`);
         this._transforms.forEach((transform) => {
-          r.push(` ${pad}${spacer}${spacer}${transform}`);
+          r.push(`${transform} `);
         });
         r.push(`"\n`);
 
@@ -171,7 +171,7 @@ export class ApgSvgNode {
     return this;
   }
 
-  textStyle(atextStyle: IApgSvgTextStyle) {
+  textStyle(atextStyle: IApgSvgTextStyle, asetFillAndStroke = true) {
     const ALLOWED_TAGS = "g|text|textPath";
     this.#checkTag("TextStyle", ALLOWED_TAGS);
     this.attrib("font-size", `${atextStyle.size}`);
@@ -179,11 +179,13 @@ export class ApgSvgNode {
     if (atextStyle.anchor) this.attrib("text-anchor", `${atextStyle.anchor}`);
     if (atextStyle.italic) this.attrib("font-style", "italic");
     if (atextStyle.bold) this.attrib("font-weight", "bold");
-    if (atextStyle.fill) this.fill(atextStyle.fill.color, atextStyle.fill.opacity);
-    if (atextStyle.stroke) {
-      this.stroke(atextStyle.stroke.color, atextStyle.stroke.width);
-    } else {
-      this.stroke("none", 0);
+    if (asetFillAndStroke) {
+      if (atextStyle.fill) this.fill(atextStyle.fill.color, atextStyle.fill.opacity);
+      if (atextStyle.stroke) {
+        this.stroke(atextStyle.stroke.color, atextStyle.stroke.width);
+      } else {
+        this.stroke("none", 0);
+      }
     }
     return this;
   }
