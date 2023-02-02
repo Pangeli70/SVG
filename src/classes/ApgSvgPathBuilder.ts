@@ -7,7 +7,7 @@
 import { eApgSvgPathCommands } from "../enums/eApgSvgPathCommands.ts";
 import { IApgSvgPathInstruction } from "../interfaces/IApgSvgPathInstruction.ts";
 
-export class ApgSvgPathFactory {
+export class ApgSvgPathBuilder {
 
     private _istructions: IApgSvgPathInstruction[] = []
 
@@ -24,6 +24,7 @@ export class ApgSvgPathFactory {
         });
     }
 
+
     line(adx: number, ady: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.LINE_REL,
@@ -37,12 +38,14 @@ export class ApgSvgPathFactory {
         });
     }
 
+
     close() {
         this._istructions.push({
             command: eApgSvgPathCommands.CLOSE_ABS,
             params: []
         });
     }
+
 
     cubic(adx: number, ady: number, acdx1: number, acdy1: number, acdx2: number, acdy2: number,) {
         this._istructions.push({
@@ -57,6 +60,7 @@ export class ApgSvgPathFactory {
         });
     }
 
+
     cubicSmooth(adx: number, ady: number, acdx2: number, acdy2: number,) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_CUBIC_CURVE_REL,
@@ -70,6 +74,7 @@ export class ApgSvgPathFactory {
         });
     }
 
+
     quadratic(adx: number, ady: number, acdx1: number, acdy1: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.QUADRATIC_CURVE_REL,
@@ -82,6 +87,7 @@ export class ApgSvgPathFactory {
             params: [acx1, acy1, ax, ay]
         });
     }
+
 
     quadraticSmooth(adx: number, ady: number) {
         this._istructions.push({
@@ -110,6 +116,7 @@ export class ApgSvgPathFactory {
         });
     }
 
+    
     build() {
         const t: string[] = [];
 

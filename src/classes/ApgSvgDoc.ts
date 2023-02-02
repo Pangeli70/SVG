@@ -444,12 +444,12 @@ export class ApgSvgDoc {
     atransforms: IApgSvgTransforms
   ): ApgSvgNode {
 
-    const u = new ApgSvgNode();
-    u.type = eApgSvgNodeTypes.USE;
-    u.tag = "use";
-    u.ID = this.#nextID(aid, u.type);
-    u.attrib("id", `${u.ID}`);
-    u.attrib("xlink:href", `#${aid}`);
+    const r = new ApgSvgNode();
+    r.type = eApgSvgNodeTypes.USE;
+    r.tag = "use";
+    r.ID = this.#nextID(aid, r.type);
+    r.attrib("id", `${r.ID}`);
+    r.attrib("xlink:href", `#${aid}`);
     let x = ax;
     let y = this.#y(ay);
 
@@ -475,14 +475,14 @@ export class ApgSvgDoc {
       trasfs += ` rotate(${atransforms.rotate.a}, ${x}, ${y})`
     }
 
-    u.attrib("x", `${x}`);
-    u.attrib("y", `${y}`);
+    r.attrib("x", `${x}`);
+    r.attrib("y", `${y}`);
     if (trasfs != "") { 
-      u.attrib("transform", trasfs);
+      r.attrib("transform", trasfs);
     }
 
-    this.#addNode(u);
-    return u;
+    this.#addNode(r);
+    return r;
   }
 
 
