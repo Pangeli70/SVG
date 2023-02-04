@@ -2,6 +2,7 @@
  * @module [SVG]
  * @author [APG] ANGELI Paolo Giusto
  * @version 0.9.3 [APG 2022/12/26] Github beta
+ * @version 0.9.4 [APG 2023/02/04] Chainable commands version
  * -----------------------------------------------------------------------
 */
 import { eApgSvgPathCommands } from "../enums/eApgSvgPathCommands.ts";
@@ -16,12 +17,14 @@ export class ApgSvgPathBuilder {
             command: eApgSvgPathCommands.MOVE_REL,
             params: [adx, ady]
         });
+        return this;
     }
     moveTo(ax: number, ay: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.MOVE_ABS,
             params: [ax, ay]
         });
+        return this;
     }
 
 
@@ -30,12 +33,14 @@ export class ApgSvgPathBuilder {
             command: eApgSvgPathCommands.LINE_REL,
             params: [adx, ady]
         });
+        return this;
     }
     lineTo(ax: number, ay: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.LINE_ABS,
             params: [ax, ay]
         });
+        return this;
     }
 
 
@@ -52,12 +57,14 @@ export class ApgSvgPathBuilder {
             command: eApgSvgPathCommands.CUBIC_CURVE_REL,
             params: [acdx1, acdy1, acdx2, acdy2, adx, ady]
         });
+        return this;
     }
     cubicTo(ax: number, ay: number, acx1: number, acy1: number, acx2: number, acy2: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.CUBIC_CURVE_ABS,
             params: [acx1, acy1, acx2, acy2, ax, ay]
         });
+        return this;
     }
 
 
@@ -66,12 +73,14 @@ export class ApgSvgPathBuilder {
             command: eApgSvgPathCommands.SMOOTH_CUBIC_CURVE_REL,
             params: [acdx2, acdy2, adx, ady]
         });
+        return this;
     }
     cubicSmoothTo(ax: number, ay: number, acx2: number, acy2: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_CUBIC_CURVE_ABS,
             params: [acx2, acy2, ax, ay]
         });
+        return this;
     }
 
 
@@ -80,12 +89,14 @@ export class ApgSvgPathBuilder {
             command: eApgSvgPathCommands.QUADRATIC_CURVE_REL,
             params: [acdx1, acdy1, adx, ady]
         });
+        return this;
     }
     quadraticTo(ax: number, ay: number, acx1: number, acy1: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.QUADRATIC_CURVE_ABS,
             params: [acx1, acy1, ax, ay]
         });
+        return this;
     }
 
 
@@ -94,12 +105,14 @@ export class ApgSvgPathBuilder {
             command: eApgSvgPathCommands.SMOOTH_QUADRATIC_CURVE_REL,
             params: [adx, ady]
         });
+        return this;
     }
     quadraticSmoothTo(ax: number, ay: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_QUADRATIC_CURVE_ABS,
             params: [ax, ay]
         });
+        return this;
     }
 
 
@@ -108,12 +121,14 @@ export class ApgSvgPathBuilder {
             command: eApgSvgPathCommands.ARC_REL,
             params: [arad, arad, 0, alarge ? 1 : 0, aflip ? 1 : 0, adx, ady]
         });
+        return this;
     }
     arcTo(ax: number, ay: number, arad: number, alarge: boolean, aflip: boolean,) {
         this._istructions.push({
             command: eApgSvgPathCommands.ARC_REL,
             params: [arad, arad, 0, alarge ? 1 : 0, aflip ? 1 : 0, ax, ay]
         });
+        return this;
     }
 
     
