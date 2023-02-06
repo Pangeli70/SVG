@@ -42,13 +42,33 @@ export class ApgSvgPathBuilder {
         });
         return this;
     }
-
-
-    close() {
+    lineHorizontalRel(adeltaX: number) {
         this._istructions.push({
-            command: eApgSvgPathCommands.CLOSE_ABS,
-            params: []
+            command: eApgSvgPathCommands.LINE_HOR_REL,
+            params: [adeltaX]
         });
+        return this;
+    }
+    lineHorizontalAbs(ax: number) {
+        this._istructions.push({
+            command: eApgSvgPathCommands.LINE_HOR_ABS,
+            params: [ax]
+        });
+        return this;
+    }
+    lineVerticalRel(adeltaY: number) {
+        this._istructions.push({
+            command: eApgSvgPathCommands.LINE_VERT_REL,
+            params: [-adeltaY]
+        });
+        return this;
+    }
+    lineVerticalAbs(ay: number) {
+        this._istructions.push({
+            command: eApgSvgPathCommands.LINE_VERT_ABS,
+            params: [-ay]
+        });
+        return this;
     }
 
 
@@ -80,70 +100,105 @@ export class ApgSvgPathBuilder {
     }
 
 
-    cubicSmoothRel(adx: number, ady: number, acdx2: number, acdy2: number,) {
+    cubicSmoothRel(
+        acontrolPoint2DeltaX: number, acontrolPoint2DeltaY: number,
+        aendPointDeltaX: number, aendPointDeltaY: number
+    ) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_CUBIC_CURVE_REL,
-            params: [acdx2, -acdy2, adx, -ady]
+            params: [acontrolPoint2DeltaX, -acontrolPoint2DeltaY, aendPointDeltaX, -aendPointDeltaY,]
         });
         return this;
     }
-    cubicSmoothAbs(ax: number, ay: number, acx2: number, acy2: number) {
+    cubicSmoothAbs(
+        acontrolPoint2X: number, acontrolPoint2Y: number,
+        aendPointX: number, aendPointY: number
+    ) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_CUBIC_CURVE_ABS,
-            params: [acx2, -acy2, ax, -ay]
+            params: [acontrolPoint2X, -acontrolPoint2Y, aendPointX, -aendPointY]
         });
         return this;
     }
 
 
-    quadratic(adx: number, ady: number, acdx1: number, acdy1: number) {
+    quadraticRel(
+        acontrolPointDeltaX: number, acontrolPointDeltaY: number,
+        aendPointDeltaX: number, aendPointDeltaY: number
+    ) {
         this._istructions.push({
             command: eApgSvgPathCommands.QUADRATIC_CURVE_REL,
-            params: [acdx1, -acdy1, adx, -ady]
+            params: [acontrolPointDeltaX, -acontrolPointDeltaY, aendPointDeltaX, -aendPointDeltaY]
         });
         return this;
     }
-    quadraticTo(ax: number, ay: number, acx1: number, acy1: number) {
+    quadraticAbs(
+        acontrolPointX: number, acontrolPointY: number,
+        aendPointX: number, aendPointY: number
+    ) {
         this._istructions.push({
             command: eApgSvgPathCommands.QUADRATIC_CURVE_ABS,
-            params: [acx1, -acy1, ax, -ay]
+            params: [acontrolPointX, -acontrolPointY, aendPointX, -aendPointY]
         });
         return this;
     }
 
 
-    quadraticSmooth(adx: number, ady: number) {
+    quadraticSmoothRel(
+        aendPointDeltaX: number, aendPointDeltaY: number
+    ) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_QUADRATIC_CURVE_REL,
-            params: [adx, -ady]
+            params: [aendPointDeltaX, -aendPointDeltaY]
         });
         return this;
     }
-    quadraticSmoothTo(ax: number, ay: number) {
+    quadraticSmoothAbs(
+        aendPointX: number, aendPointY: number
+    ) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_QUADRATIC_CURVE_ABS,
-            params: [ax, -ay]
+            params: [aendPointX, -aendPointY]
         });
         return this;
     }
 
 
-    arc(adx: number, ady: number, arad: number, alarge: boolean, aflip: boolean,) {
+    arcRel(
+        aendPointDeltaX: number, aendPointDeltaY: number,
+        axRadious: number, ayRadious: number,
+        axAxisRotation: number,
+        alargeArcFlag: boolean, asweepFlag: boolean
+    ) {
         this._istructions.push({
             command: eApgSvgPathCommands.ARC_REL,
-            params: [arad, arad, 0, alarge ? 1 : 0, aflip ? 1 : 0, adx, ady]
+            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, asweepFlag ? 1 : 0, aendPointDeltaX, aendPointDeltaY]
         });
         return this;
     }
-    arcTo(ax: number, ay: number, arad: number, alarge: boolean, aflip: boolean,) {
+    arcAbs(
+        aendPointX: number, aendPointY: number,
+        axRadious: number, ayRadious: number,
+        axAxisRotation: number,
+        alargeArcFlag: boolean, asweepFlag: boolean
+    ) {
         this._istructions.push({
-            command: eApgSvgPathCommands.ARC_REL,
-            params: [arad, arad, 0, alarge ? 1 : 0, aflip ? 1 : 0, ax, ay]
+            command: eApgSvgPathCommands.ARC_ABS,
+            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, asweepFlag ? 1 : 0, aendPointX, aendPointY]
         });
         return this;
     }
 
-    
+
+    close() {
+        this._istructions.push({
+            command: eApgSvgPathCommands.CLOSE_ABS,
+            params: []
+        });
+    }
+
+
+
     build() {
         const t: string[] = [];
 

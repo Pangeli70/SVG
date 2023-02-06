@@ -133,10 +133,18 @@ export class ApgSvgNode {
     return this;
   }
 
-  strokeDashPattern(adashArray: number[], adashOffset = 0): ApgSvgNode {
-    const pattern = adashArray.toString();
-    this.attrib('stroke-dasharray', pattern);
-    this.attrib('stroke-dashoffset', adashOffset.toString());
+  fillPattern(apatternDef: string) { 
+    this.attrib('fill', `url(#${apatternDef})`);
+    return this;
+  }
+
+  fillGradient(agradientDef: string) {
+    this.attrib('fill', `url(#${agradientDef})`);
+    return this;
+  }
+
+  fillTexture(atextureDef: string) {
+    this.attrib('fill', `url(#${atextureDef})`);
     return this;
   }
 
@@ -145,6 +153,13 @@ export class ApgSvgNode {
     if (awidth) {
       this.attrib('stroke-width', awidth.toString());
     }
+    return this;
+  }
+
+  strokeDashPattern(adashArray: number[], adashOffset = 0): ApgSvgNode {
+    const pattern = adashArray.toString();
+    this.attrib('stroke-dasharray', pattern);
+    this.attrib('stroke-dashoffset', adashOffset.toString());
     return this;
   }
 
