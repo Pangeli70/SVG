@@ -6,6 +6,7 @@
  * @version 0.5.1 [APG 2021/02/21]
  * @version 0.8.0 [APG 2022/04/03] Porting to Deno
  * @version 0.9.2 [APG 2022/11/24] Github beta
+ * @version 0.9.4 [APG 2023/02/05] Implmented trasforms node operations
  * -----------------------------------------------------------------------
  */
 
@@ -149,12 +150,9 @@ export class ApgSvgDoc {
   addToDefs(adefId: string, anode: ApgSvgNode) {
     this._defs.set(adefId, anode);
   }
-
-
   getFromDef(adefId: string) {
     return this._defs.get(adefId);
   }
-
   getDefs() {
     return Array.from(this._defs.keys());
   }
@@ -163,8 +161,6 @@ export class ApgSvgDoc {
   addStyle(astyle: ApgSvgStyle) {
     this._styles.set(astyle.ID, astyle);
   }
-
-
   getStyle(astyleId: string) {
     return this._styles.get(astyleId);
   }
@@ -437,7 +433,7 @@ export class ApgSvgDoc {
     return r;
   }
 
-  useT(
+  useWithTransforms(
     aid: string,
     ax: number,
     ay: number,
@@ -455,7 +451,8 @@ export class ApgSvgDoc {
 
     let trasfs = "";
     if (atransforms.scale) {
-      trasfs += ` scale(${atransforms.scale.x}, ${atransforms.scale.y})`
+      r.scale(atransforms.scale.x, atransforms.scale.y);
+      // trasfs += ` scale(${atransforms.scale.x}, ${atransforms.scale.y})`
       x /= atransforms.scale.x;
       y /= atransforms.scale.y;
     }
@@ -472,14 +469,15 @@ export class ApgSvgDoc {
     }
 
     if (atransforms.rotate) {
-      trasfs += ` rotate(${atransforms.rotate.a}, ${x}, ${y})`
+      // trasfs += ` rotate(${atransforms.rotate.a}, ${x}, ${y})`
+      r.rotate(atransforms.rotate.a, x, y)
     }
 
     r.attrib("x", `${x}`);
     r.attrib("y", `${y}`);
-    if (trasfs != "") { 
-      r.attrib("transform", trasfs);
-    }
+    //if (trasfs != "") { 
+    //  r.attrib("transform", trasfs);
+    //}
 
     this.#addNode(r);
     return r;

@@ -12,33 +12,33 @@ export class ApgSvgPathBuilder {
 
     private _istructions: IApgSvgPathInstruction[] = []
 
-    move(adx: number, ady: number) {
+    moveRel(adx: number, ady: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.MOVE_REL,
-            params: [adx, ady]
+            params: [adx, -ady]
         });
         return this;
     }
-    moveTo(ax: number, ay: number) {
+    moveAbs(ax: number, ay: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.MOVE_ABS,
-            params: [ax, ay]
+            params: [ax, -ay]
         });
         return this;
     }
 
 
-    line(adx: number, ady: number) {
+    lineRel(adeltaX: number, adeltaY: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.LINE_REL,
-            params: [adx, ady]
+            params: [adeltaX, -adeltaY]
         });
         return this;
     }
-    lineTo(ax: number, ay: number) {
+    lineAbs(ax: number, ay: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.LINE_ABS,
-            params: [ax, ay]
+            params: [ax, -ay]
         });
         return this;
     }
@@ -52,33 +52,45 @@ export class ApgSvgPathBuilder {
     }
 
 
-    cubic(adx: number, ady: number, acdx1: number, acdy1: number, acdx2: number, acdy2: number,) {
+    cubicRel(
+        acontrolPoint1DeltaX: number, acontrolPoint1DeltaY: number,
+        acontrolPoint2DeltaX: number, acontrolPoint2DeltaY: number,
+        aendPointDeltaX: number, aendPointDeltaY: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.CUBIC_CURVE_REL,
-            params: [acdx1, acdy1, acdx2, acdy2, adx, ady]
+            params: [
+                acontrolPoint1DeltaX, -acontrolPoint1DeltaY,
+                acontrolPoint2DeltaX, -acontrolPoint2DeltaY,
+                aendPointDeltaX, -aendPointDeltaY]
         });
         return this;
     }
-    cubicTo(ax: number, ay: number, acx1: number, acy1: number, acx2: number, acy2: number) {
+    cubicAbs(
+        acontrolPoint1X: number, acontrolPoint1Y: number,
+        acontrolPoint2X: number, acontrolPoint2Y: number,
+        aendPointX: number, aendPointY: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.CUBIC_CURVE_ABS,
-            params: [acx1, acy1, acx2, acy2, ax, ay]
+            params: [
+                acontrolPoint1X, -acontrolPoint1Y,
+                acontrolPoint2X, -acontrolPoint2Y,
+                aendPointX, -aendPointY]
         });
         return this;
     }
 
 
-    cubicSmooth(adx: number, ady: number, acdx2: number, acdy2: number,) {
+    cubicSmoothRel(adx: number, ady: number, acdx2: number, acdy2: number,) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_CUBIC_CURVE_REL,
-            params: [acdx2, acdy2, adx, ady]
+            params: [acdx2, -acdy2, adx, -ady]
         });
         return this;
     }
-    cubicSmoothTo(ax: number, ay: number, acx2: number, acy2: number) {
+    cubicSmoothAbs(ax: number, ay: number, acx2: number, acy2: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_CUBIC_CURVE_ABS,
-            params: [acx2, acy2, ax, ay]
+            params: [acx2, -acy2, ax, -ay]
         });
         return this;
     }
@@ -87,14 +99,14 @@ export class ApgSvgPathBuilder {
     quadratic(adx: number, ady: number, acdx1: number, acdy1: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.QUADRATIC_CURVE_REL,
-            params: [acdx1, acdy1, adx, ady]
+            params: [acdx1, -acdy1, adx, -ady]
         });
         return this;
     }
     quadraticTo(ax: number, ay: number, acx1: number, acy1: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.QUADRATIC_CURVE_ABS,
-            params: [acx1, acy1, ax, ay]
+            params: [acx1, -acy1, ax, -ay]
         });
         return this;
     }
@@ -103,14 +115,14 @@ export class ApgSvgPathBuilder {
     quadraticSmooth(adx: number, ady: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_QUADRATIC_CURVE_REL,
-            params: [adx, ady]
+            params: [adx, -ady]
         });
         return this;
     }
     quadraticSmoothTo(ax: number, ay: number) {
         this._istructions.push({
             command: eApgSvgPathCommands.SMOOTH_QUADRATIC_CURVE_ABS,
-            params: [ax, ay]
+            params: [ax, -ay]
         });
         return this;
     }

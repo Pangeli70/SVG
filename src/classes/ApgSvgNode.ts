@@ -6,6 +6,7 @@
  * @version 0.5.1 [APG 2021/02/21]
  * @version 0.8.0 [APG 2022/04/03] Porting to Deno
  * @version 0.9.2 [APG 2022/11/24] Github beta
+ * @version 0.9.4 [APG 2023/02/05] Changed from _ [] to _ Map()
  * -----------------------------------------------------------------------
  */
 
@@ -20,21 +21,26 @@ import { ApgSvgDoc } from "./ApgSvgDoc.ts";
 export class ApgSvgNode {
   public ID = "";
   public type: eApgSvgNodeTypes = eApgSvgNodeTypes.UNDEF;
+  /** Svg tag */
   public tag = "";
-  private _params: string[] = [];
-  private _transforms: string[] = [];
+  /** Node attributes. Map prevents multiple attribute assignment to the same node. The last is applied.*/
+  private _attributes: Map<string, string> = new Map();
+  /** Node transforms. Map prevents multiple trasnform assignment to the same node. The last is applied.*/
+  private _transforms: Map<string, string> = new Map();
+  /** List of child nodes */
   private _children: ApgSvgNode[] = [];
+  /** List of text row content*/
   private _innerContent: string[] = [];
 
 
 
-  clear(aparams = false) {
+  clear(aclearAttributes = false) {
     const ALLOWED_TAGS = "group";
     this.#checkTag("Clear", ALLOWED_TAGS);
-    if (aparams) {
-      this._params = [];
+    if (aclearAttributes) {
+      this._attributes = new Map();
     }
-    this._transforms = [];
+    this._transforms = new Map();
     this._children = [];
     this._innerContent = [];
     return this;
@@ -49,20 +55,18 @@ export class ApgSvgNode {
     // open tag
     r.push(`${pad}<${this.tag}\n`);
 
-    if (this._params.length > 0) {
+    if (this._attributes.size > 0) {
 
-      this._params.forEach((element) => {
-        r.push(`${pad}${spacer}${element}\n`);
-      });
+      for (const v of this._attributes.values()) {
+        r.push(`${pad}${spacer}${v}\n`);
+      }
 
-
-      if (this._transforms.length > 0) {
+      if (this._transforms.size > 0) {
         r.push(`${pad}${spacer}transform="`);
-        this._transforms.forEach((transform) => {
-          r.push(`${transform} `);
-        });
+        for (const v of this._transforms.values()) {
+          r.push(`${pad}${spacer}${v}\n`);
+        }
         r.push(`"\n`);
-
       }
 
     }
@@ -76,7 +80,7 @@ export class ApgSvgNode {
       });
     }
 
-    // TODO @9 APG ... -- maybe inner content and renderd children are incompatible
+    // TODO @9 -- APG 20230205. Maybe inner content and renderd children are incompatible. UB.
     if (this._children.length != 0) {
       this._children.forEach((element) => {
         const renderedChildren = element.render(adepth + 1);
@@ -112,47 +116,53 @@ export class ApgSvgNode {
 
   attrib(aname: string, avalue: string): ApgSvgNode {
     const newParam = aname + ' = "' + avalue + '"'
-    this._params.push(newParam);
+    this._attributes.set(aname, newParam);
     return this;
   }
 
-  class(aCssClassName: string): ApgSvgNode {
-    this._params.push(`class="${aCssClassName}"`);
+  class(acssClassName: string): ApgSvgNode {
+    this.attrib('class', acssClassName);
     return this;
   }
 
   fill(acolor: string, aopacity?: number): ApgSvgNode {
-    this._params.push(`fill="${acolor}"`);
-    if (aopacity) this._params.push(`fill-opacity="${aopacity}"`);
+    this.attrib('fill', acolor);
+    if (aopacity) {
+      this.attrib('fill-opacity', aopacity.toString());
+    }
     return this;
   }
 
   strokeDashPattern(adashArray: number[], adashOffset = 0): ApgSvgNode {
     const pattern = adashArray.toString();
-    this._params.push(`stroke-dasharray="${pattern}"`);
-    this._params.push(`stroke-dashoffset="${adashOffset}"`);
+    this.attrib('stroke-dasharray', pattern);
+    this.attrib('stroke-dashoffset', adashOffset.toString());
     return this;
   }
 
   stroke(acolor: string, awidth?: number): ApgSvgNode {
-    this._params.push(`stroke="${acolor}"`);
-    if (awidth) this._params.push(`stroke-width="${awidth}"`);
+    this.attrib('stroke', acolor);
+    if (awidth) {
+      this.attrib('stroke-width', awidth.toString());
+    }
     return this;
   }
 
+  /** @remark Multilple move on the same node don't sum or merge. Last one is applied */
   move(ax: number, ay: number) {
-    // TODO @9 APG ... -- what if there are multiple translations? how do they merge ? UB?
-    this._transforms.push(`translate(${ax} ${-ay})`);
+    this._transforms.set('translate', `translate(${ax} ${-ay})`);
     return this;
   }
 
+  /** @remark Multilple rotate on the same node don't sum or merge. Last one is applied */
   rotate(adeg: number, acx = 0, acy = 0) {
-    this._transforms.push(`rotate(${360 - adeg}, ${acx}, ${-acy})`);
+    this._transforms.set('rotate', `rotate(${360 - adeg}, ${acx}, ${-acy})`);
     return this;
   }
 
+  /** @remark Multilple scale on the same node don't sum or merge. Last one is applied */
   scale(axfactor: number, ayfactor: number) {
-    this._transforms.push(`scale(${axfactor}, ${ayfactor})`);
+    this._transforms.set('scale', `scale(${axfactor}, ${ayfactor})`);
     return this;
   }
 
@@ -160,14 +170,14 @@ export class ApgSvgNode {
   aspectRatio(aalign: eApgSvgAlign, amos: eApgSvgMeetOrSlice) {
     const ALLOWED_TAGS = "image";
     this.#checkTag("AspectRatio", ALLOWED_TAGS);
-    this._params.push(`preserveAspectRatio="${aalign} ${amos}"`);
+    this.attrib('preserveAspectRatio', `${aalign} ${amos}`);
     return this;
   }
 
   anchor(aanchor: eApgSvgTextAnchor) {
     const ALLOWED_TAGS = "g|text|textPath";
     this.#checkTag("Anchor", ALLOWED_TAGS);
-    this._params.push(`text-anchor="${aanchor}"`);
+    this.attrib('text-anchor', aanchor);
     return this;
   }
 

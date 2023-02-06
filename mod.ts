@@ -28,5 +28,6 @@ export type { IApgSvgTransforms } from "./src/interfaces/IApgSvgTransforms.ts";
 export { ApgSvgDoc } from "./src/classes/ApgSvgDoc.ts";
 export { ApgSvgNode } from "./src/classes/ApgSvgNode.ts";
 export { ApgSvgPathBuilder } from "./src/classes/ApgSvgPathBuilder.ts";
+export { ApgSvgHatchBuilder } from "./src/classes/ApgSvgHatchBuilder.ts";
 export { ApgSvgStyleAttribute } from "./src/classes/ApgSvgStyleAttribute.ts";
 export { ApgSvgStyle } from "./src/classes/ApgSvgStyle.ts";
