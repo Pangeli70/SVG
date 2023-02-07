@@ -4,9 +4,10 @@
  * @version 0.9.4 [APG 2023/02/04] Procedural hatch patterns
  * -----------------------------------------------------------------------
 */
-import { A2D, Svg } from "../../../CAD/deps.ts";
+import { A2D } from "../../deps.ts";
 import { IApgSvgStrokeStyle } from "../interfaces/IApgSvgStrokeStyle.ts";
 import { ApgSvgDoc } from "./ApgSvgDoc.ts";
+import { ApgSvgPathBuilder } from "./ApgSvgPathBuilder.ts";
 
 export class ApgSvgHatchBuilder {
 
@@ -107,7 +108,7 @@ export class ApgSvgHatchBuilder {
     roof(aname: string, axSize: number, aySize: number, astrokeStyle?: IApgSvgStrokeStyle) {
         const halfXSize = axSize / 2;
         const halfYSize = aySize / 2;
-        const pathBuilder = new Svg.ApgSvgPathBuilder();
+        const pathBuilder = new ApgSvgPathBuilder();
         pathBuilder
             .moveAbs(0, halfYSize)
             .cubicAbs(halfXSize / 2, halfYSize, halfXSize, aySize - halfYSize / 2, halfXSize, aySize)
@@ -131,7 +132,7 @@ export class ApgSvgHatchBuilder {
     roofTiles(aname: string, axSize: number, aySize: number, astrokeStyle?: IApgSvgStrokeStyle) {
         const blockXSize = axSize / 10;
         const blockYSize = aySize / 10;
-        const pathBuilder = new Svg.ApgSvgPathBuilder();
+        const pathBuilder = new ApgSvgPathBuilder();
         pathBuilder
             .moveAbs(blockXSize, aySize)
             .lineAbs(0, blockYSize)
