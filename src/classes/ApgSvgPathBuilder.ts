@@ -204,6 +204,14 @@ export class ApgSvgPathBuilder {
 
         for (const inst of this._istructions) {
             switch (inst.command) {
+                case eApgSvgPathCommands.LINE_HOR_ABS:
+                case eApgSvgPathCommands.LINE_HOR_REL:
+                case eApgSvgPathCommands.LINE_VERT_ABS:
+                case eApgSvgPathCommands.LINE_VERT_REL:
+                    {
+                        t.push(`${inst.command} ${inst.params[0]}`);
+                    }
+                    break;
                 case eApgSvgPathCommands.MOVE_ABS:
                 case eApgSvgPathCommands.MOVE_REL:
                 case eApgSvgPathCommands.LINE_REL:
