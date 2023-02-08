@@ -168,11 +168,11 @@ export class ApgSvgPathBuilder {
         aendPointDeltaX: number, aendPointDeltaY: number,
         axRadious: number, ayRadious: number,
         axAxisRotation: number,
-        alargeArcFlag: boolean, asweepFlag: boolean
+        alargeArcFlag: boolean, aclockwise: boolean
     ) {
         this._istructions.push({
             command: eApgSvgPathCommands.ARC_REL,
-            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, asweepFlag ? 1 : 0, aendPointDeltaX, -aendPointDeltaY]
+            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, aclockwise ? 1 : 0, aendPointDeltaX, -aendPointDeltaY]
         });
         return this;
     }
@@ -180,11 +180,11 @@ export class ApgSvgPathBuilder {
         aendPointX: number, aendPointY: number,
         axRadious: number, ayRadious: number,
         axAxisRotation: number,
-        alargeArcFlag: boolean, asweepFlag: boolean
+        alargeArcFlag: boolean, aclockwise: boolean
     ) {
         this._istructions.push({
             command: eApgSvgPathCommands.ARC_ABS,
-            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, asweepFlag ? 1 : 0, aendPointX, -aendPointY]
+            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, aclockwise ? 1 : 0, aendPointX, -aendPointY]
         });
         return this;
     }
@@ -239,7 +239,7 @@ export class ApgSvgPathBuilder {
                 case eApgSvgPathCommands.ARC_ABS:
                 case eApgSvgPathCommands.ARC_REL:
                     {
-                        t.push(`${inst.command} ${inst.params[0]} ${inst.params[1]} ${inst.params[2]} ${inst.params[3]} ${inst.params[4]} ${inst.params[5]} ${inst.params[6]}`);
+                        t.push(`${inst.command} ${inst.params[0]} ${inst.params[1]} ${inst.params[2]} ${inst.params[3]} ${inst.params[4]} ${inst.params[5]},${inst.params[6]}`);
                     }
                     break;
                 case eApgSvgPathCommands.CLOSE_ABS:
