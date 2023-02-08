@@ -172,7 +172,7 @@ export class ApgSvgPathBuilder {
     ) {
         this._istructions.push({
             command: eApgSvgPathCommands.ARC_REL,
-            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, asweepFlag ? 1 : 0, aendPointDeltaX, aendPointDeltaY]
+            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, asweepFlag ? 1 : 0, aendPointDeltaX, -aendPointDeltaY]
         });
         return this;
     }
@@ -184,7 +184,7 @@ export class ApgSvgPathBuilder {
     ) {
         this._istructions.push({
             command: eApgSvgPathCommands.ARC_ABS,
-            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, asweepFlag ? 1 : 0, aendPointX, aendPointY]
+            params: [axRadious, ayRadious, axAxisRotation, alargeArcFlag ? 1 : 0, asweepFlag ? 1 : 0, aendPointX, -aendPointY]
         });
         return this;
     }
