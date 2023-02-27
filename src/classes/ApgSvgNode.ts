@@ -133,7 +133,7 @@ export class ApgSvgNode {
     return this;
   }
 
-  fillPattern(apatternDef: string) { 
+  fillPattern(apatternDef: string) {
     this.attrib('fill', `url(#${apatternDef})`);
     return this;
   }
@@ -148,10 +148,11 @@ export class ApgSvgNode {
     return this;
   }
 
-  stroke(acolor: string, awidth?: number): ApgSvgNode {
+  stroke(acolor: string, awidth: number, aopacity = 1): ApgSvgNode {
     this.attrib('stroke', acolor);
-    if (awidth) {
-      this.attrib('stroke-width', awidth.toString());
+    this.attrib('stroke-width', awidth.toString());
+    if (aopacity != 1) {
+      this.attrib('stroke-opacity', aopacity.toString());
     }
     return this;
   }
