@@ -80,7 +80,7 @@ export class ApgSvgNode {
       });
     }
 
-    // TODO @9 -- APG 20230205. Maybe inner content and renderd children are incompatible. UB.
+    // TODO @9 Maybe inner content and renderd children are incompatible. UB. -- APG 20230205
     if (this._children.length != 0) {
       this._children.forEach((element) => {
         const renderedChildren = element.render(adepth + 1);

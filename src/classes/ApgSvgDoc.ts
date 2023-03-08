@@ -581,7 +581,7 @@ export class ApgSvgDoc {
     }
     r.push('    </style>\n\n');
 
-    //TODO @6 APG 20230128 investigate performance issues with this destructuring concatenation
+    //TODO @6 Investigate performance issues with this destructuring concatenation -- APG 20230128
     if (this._rootNode) {
       const renderedNodes = this._rootNode?.render(1);
       r.push(...renderedNodes);
