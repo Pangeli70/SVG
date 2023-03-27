@@ -22,7 +22,8 @@ export interface IApgSvgTextStyle {
   /** Average font H/W Ratio depends on Font Family and variations (italic, bold)*/
   aspectRatio: number;
   /** Line height factor. Eg. 1.4 times the size. If not specified is 1 */
-  leading?: number;/**  Position of the text */
+  lineHeight?: number;
+  /**  Position of the text */
   anchor?: eApgSvgTextAnchor;
   /** The font is in italic variations */
   italic?: boolean;

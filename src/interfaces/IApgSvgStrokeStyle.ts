@@ -10,6 +10,8 @@
  * @version 0.9.5 [APG 2023/02/26] Added opacity
  * -----------------------------------------------------------------------
  */
+
+/** Definition of the Stroke attibutes */
 export interface IApgSvgStrokeStyle {
   color: string;
   width: number;

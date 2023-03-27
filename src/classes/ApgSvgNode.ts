@@ -64,7 +64,7 @@ export class ApgSvgNode {
       if (this._transforms.size > 0) {
         r.push(`${pad}${spacer}transform="`);
         for (const v of this._transforms.values()) {
-          r.push(`${pad}${spacer}${v}\n`);
+          r.push(`${v} `);
         }
         r.push(`"\n`);
       }
@@ -133,18 +133,18 @@ export class ApgSvgNode {
     return this;
   }
 
-  fillPattern(apatternDef: string) {
-    this.attrib('fill', `url(#${apatternDef})`);
+  fillPattern(apatternId: string) {
+    this.attrib('fill', `url(#${apatternId})`);
     return this;
   }
 
-  fillGradient(agradientDef: string) {
-    this.attrib('fill', `url(#${agradientDef})`);
+  fillGradient(agradientId: string) {
+    this.attrib('fill', `url(#${agradientId})`);
     return this;
   }
 
-  fillTexture(atextureDef: string) {
-    this.attrib('fill', `url(#${atextureDef})`);
+  fillTexture(atextureId: string) {
+    this.attrib('fill', `url(#${atextureId})`);
     return this;
   }
 

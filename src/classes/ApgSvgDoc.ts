@@ -108,6 +108,9 @@ export class ApgSvgDoc {
     this._nodes.set(anode.ID, anode);
   }
 
+  removeNode(anodeID: string) {
+    return this._nodes.delete(anodeID);
+  }
 
   #coordFromViewBoxPerc(aperc: number, atype: eApgSvgCoordType) {
     if (aperc < 0 || aperc > 1) {
