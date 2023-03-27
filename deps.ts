@@ -6,6 +6,8 @@
 
 
 // https://github
+
 export * as A2D from "https://raw.githubusercontent.com/Pangeli70/apg-2d/master/mod.ts";
 
+// export * as A2D from "../apg-2d/mod.ts";
 
